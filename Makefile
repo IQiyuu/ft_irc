@@ -1,6 +1,8 @@
 NAME = ircserv
 
 F =	main\
+	Client\
+	Server
 
 S = $(foreach f, $(F), srcs/$(f).cpp)
 OBJ = $(S:.cpp=.o)
