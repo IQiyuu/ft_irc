@@ -13,10 +13,10 @@
 #define MAX_CLIENTS 10
 #define SIZE 1024
 
-void sendAll(pollfd *pollfds, const char *msg, const char *sender) {
+void sendAll(pollfd *pollfds, const char *msg, const char *sender, int bl) {
     for (int i = 1; i < MAX_CLIENTS; i++) {
-        if (pollfds[i].fd > 0)
-            dprintf(pollfds[i].fd, "%s: %s\n", sender, msg);
+        if (pollfds[i].fd > 0 && i != bl)
+            dprintf(pollfds[i].fd, "%s: %s", sender, msg);
     }
     return ;
 }
@@ -87,6 +87,7 @@ int main( int ac, char *av[] ) {
     {
         // printf("useClient => %d\n", useClient);
         int pollResult = poll(pollfds, useClient + 1, 10);
+        int tmp = 0;
         if (pollResult > 0)
         {
             if (pollfds[0].revents & POLLIN)
@@ -98,18 +99,19 @@ int main( int ac, char *av[] ) {
                 char ipFrom[INET_ADDRSTRLEN];
                 inet_ntop(AF_INET, &(cliaddr.sin_addr), ipFrom, INET_ADDRSTRLEN);
 
-                printf("accept success %s\n", inet_ntoa(cliaddr.sin_addr));
+                printf("\naccept success %s\n", inet_ntoa(cliaddr.sin_addr));
                 for (int i = 1; i < MAX_CLIENTS; i++)
                 {
                     if (pollfds[i].fd == 0)
                     {
+                        tmp = i;
                         pollfds[i].fd = client_socket;
                         pollfds[i].events = POLLIN | POLLPRI;
                         useClient++;
                         break;
                     }
                 }
-                sendAll(pollfds, "", "SERVER");
+                sendAll(pollfds, "just joined\n", ipFrom, tmp);
             }
             for (int i = 1; i < MAX_CLIENTS; i++)
             {
@@ -117,39 +119,37 @@ int main( int ac, char *av[] ) {
                 {
                     char buf[SIZE];
                     int bufSize = read(pollfds[i].fd, buf, SIZE - 1);
-                    if (bufSize == -1)
+                    if (bufSize <= 0)
                     {
-                        printf("CLOSED\n");
-                        pollfds[i].fd = 0;
-                        pollfds[i].events = 0;
-                        pollfds[i].revents = 0;
-                        useClient--;
-                    }
-                    else if (bufSize == 0)
-                    {
-                        printf("CLOSED\n");
-                        pollfds[i].fd = 0;
-                        pollfds[i].events = 0;
-                        pollfds[i].revents = 0;
-                        useClient--;
-                    }
-                    else
-                    {
-                        buf[bufSize] = '\0';
-                        printf("From client: %s\n", buf);
-
                         struct sockaddr_in addrSender;
                         socklen_t addrlen2 = sizeof(addrSender);
                         getsockname(pollfds[i].fd, reinterpret_cast<struct sockaddr*>(&addrSender), &addrlen2);
                         char ipFrom[INET_ADDRSTRLEN];
                         inet_ntop(AF_INET, &(addrSender.sin_addr), ipFrom, INET_ADDRSTRLEN);
 
+                        printf("\n%s CLOSED\n", ipFrom);
+                        pollfds[i].fd = 0;
+                        pollfds[i].events = 0;
+                        pollfds[i].revents = 0;
+                        useClient--;
+
+                        sendAll(pollfds, "just left\n", ipFrom, i);
+                    }
+                    else
+                    {
+                        buf[bufSize] = '\0';
+
+                        struct sockaddr_in addrSender;
+                        socklen_t addrlen2 = sizeof(addrSender);
+                        getsockname(pollfds[i].fd, reinterpret_cast<struct sockaddr*>(&addrSender), &addrlen2);
+                        char ipFrom[INET_ADDRSTRLEN];
+                        inet_ntop(AF_INET, &(addrSender.sin_addr), ipFrom, INET_ADDRSTRLEN);
+                        printf("From %s: %s", ipFrom, buf);
+
                         for (int x = 1; x < MAX_CLIENTS; x++) {
                             /* fetsockname, getprotobyname, gethostbyname, getaddrinfo*/
                             if (x != i && pollfds[x].fd != 0) {
-                                write(pollfds[x].fd, ipFrom, strlen(ipFrom));
-                                write(pollfds[x].fd, ": ", 2);
-                                write(pollfds[x].fd, buf, strlen(buf));
+                                sendAll(pollfds, buf, ipFrom, i);
                             }
                         }
                     }
