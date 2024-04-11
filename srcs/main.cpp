@@ -13,6 +13,14 @@
 #define MAX_CLIENTS 10
 #define SIZE 1024
 
+void sendAll(pollfd *pollfds, const char *msg, const char *sender) {
+    for (int i = 1; i < MAX_CLIENTS; i++) {
+        if (pollfds[i].fd > 0)
+            dprintf(pollfds[i].fd, "%s: %s\n", sender, msg);
+    }
+    return ;
+}
+
 int main( int ac, char *av[] ) {
     if (ac != 3) {
         std::cout << "Bad parameters! The program should be launched like: `./ircserv <port> <username>`" << std::endl;
@@ -62,7 +70,7 @@ int main( int ac, char *av[] ) {
     // int poll(struct pollfd *fds, nfds_t nfds, int délai);
 
     int useClient = 0;
-    struct pollfd pollfds[MAX_CLIENTS + 1];
+    struct pollfd pollfds[MAX_CLIENTS + 1]; // liste des clients
     pollfds[0].fd = servSocket;
     pollfds[0].events = POLLIN | POLLPRI;
 
@@ -86,6 +94,10 @@ int main( int ac, char *av[] ) {
                 struct sockaddr_in cliaddr;
                 socklen_t addrlen = sizeof(cliaddr);
                 int client_socket = accept(servSocket, (struct sockaddr *)&cliaddr, &addrlen);
+
+                char ipFrom[INET_ADDRSTRLEN];
+                inet_ntop(AF_INET, &(cliaddr.sin_addr), ipFrom, INET_ADDRSTRLEN);
+
                 printf("accept success %s\n", inet_ntoa(cliaddr.sin_addr));
                 for (int i = 1; i < MAX_CLIENTS; i++)
                 {
@@ -97,6 +109,7 @@ int main( int ac, char *av[] ) {
                         break;
                     }
                 }
+                sendAll(pollfds, "", "SERVER");
             }
             for (int i = 1; i < MAX_CLIENTS; i++)
             {
@@ -124,9 +137,18 @@ int main( int ac, char *av[] ) {
                     {
                         buf[bufSize] = '\0';
                         printf("From client: %s\n", buf);
+
+                        struct sockaddr_in addrSender;
+                        socklen_t addrlen2 = sizeof(addrSender);
+                        getsockname(pollfds[i].fd, reinterpret_cast<struct sockaddr*>(&addrSender), &addrlen2);
+                        char ipFrom[INET_ADDRSTRLEN];
+                        inet_ntop(AF_INET, &(addrSender.sin_addr), ipFrom, INET_ADDRSTRLEN);
+
                         for (int x = 1; x < MAX_CLIENTS; x++) {
                             /* fetsockname, getprotobyname, gethostbyname, getaddrinfo*/
                             if (x != i && pollfds[x].fd != 0) {
+                                write(pollfds[x].fd, ipFrom, strlen(ipFrom));
+                                write(pollfds[x].fd, ": ", 2);
                                 write(pollfds[x].fd, buf, strlen(buf));
                             }
                         }
