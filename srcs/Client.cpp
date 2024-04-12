@@ -8,7 +8,7 @@ Client::Client( std::string username, int ip, int client_socket ): _username(use
 
 Client::~Client( void ) {
     close(this->_pfd.fd);
-    std::cout << "Client \033[32mDestructed\033[0m" << std::endl;
+    std::cout << "Client \033[31mDestructed\033[0m" << std::endl;
 }
 
 Client &Client::operator=( const Client &ref ) {
@@ -49,6 +49,10 @@ bool    Client::getLock( void ) const {
 
 struct pollfd Client::getPollFd( void ) const {
     return this->_pfd;
+}
+
+void    Client::setUsername( std::string nName ) {
+    this->_username = nName;
 }
 
 void Client::unlock( void ) {

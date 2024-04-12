@@ -7,5 +7,6 @@ int main( int ac, char *av[] ) {
     }
 
     Server serv(av[1], av[2]);
+    serv.listening();
     return 0;
 }
