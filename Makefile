@@ -1,6 +1,9 @@
 NAME = ircserv
 
 F =	main\
+	Client\
+	Server\
+	Channel
 
 S = $(foreach f, $(F), srcs/$(f).cpp)
 OBJ = $(S:.cpp=.o)

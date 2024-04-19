@@ -14,7 +14,7 @@ class Server {
 
         Server( void );
         Server( const Server & );
-        operator=( const Server & );
+        Server  *operator=( const Server & );
     
     public:
         Server( std::string, std::string );
@@ -31,6 +31,8 @@ class Server {
         void    connect( void );
         /* deconnecte un Client du server */
         void    disconnect( void );
+        /* cree un channel*/
+        void newChannel(std::string);
 
         /* parse la requete du client */
         void    parse( void );
@@ -38,7 +40,8 @@ class Server {
         /* lance le server */
         int    launch( void );
         /* met le server sur ecoute */
-        int    listen( void );
+        int    boucle( void );
+
 };
 
 #endif

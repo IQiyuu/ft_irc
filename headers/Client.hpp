@@ -11,21 +11,25 @@ class Client {
         std::string _username;
         std::string _nickname;
 
+        
+        
+        Client &operator=( const Client & );
+
+    public:
         Client(void);
-        ~Client(void);
-        operator=(const &Client);
-    public: 
+        Client( const Client & );
         // Cree un client avec le name, le nickname, le username et socketfd 
         Client (std::string, std::string, std::string, int);
+        ~Client( void );
 
         //getter
-        std::string getName(void);
+        std::string getNickName(void);
         std::string getRealname(void);
         std::string getUsername(void);
         int getSocketFd(void);
 
         //setter
-        void setName(std::string);
+        void setNickName(std::string);
         void setUsername(std::string);
         void setRealname(std::string);
 

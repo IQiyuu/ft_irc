@@ -11,8 +11,8 @@ class Channel {
         //std::vector<Client *>   _ops;
 
         Channel( void );
-        Channel( const Channel * );
-        operator=( const Channel * );
+        Channel( const Channel & );
+        Channel &operator=( const Channel & );
     
     public:
         Channel( std::string );
@@ -21,6 +21,7 @@ class Channel {
         /* ajoute un membre */
         void    addMember( Client * );
         /* retire un membre */
+        //si channel vide delete le channel
         void    removeMember( Client * );
 
         /* envoie un message a tous les users */
