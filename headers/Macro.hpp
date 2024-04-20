@@ -8,5 +8,6 @@
 
 #define ERROR -1
 #define SUCCESS 0
+#define POLL_TIMEOUT 100
 
 #endif

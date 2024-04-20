@@ -60,11 +60,12 @@ int Server::boucle( void ) {
     while (this->_state == LISTENING) {
         
         // on attend un event sur les fd enregistres (serv fd compris)
-        int pfd = poll(pfds.data(), pfds.size(), 100);
+        int pfd = poll(pfds.data(), pfds.size(), POLL_TIMEOUT);
         if (pfd == ERROR) {
             std::cout << "Error: " << RED << "poll crashed" << RESET << std::endl;
             return ERROR;
         }
+        std::vector<pollfd> newPfds;
         for (it = pfds.begin(); it != pfds.end(); it++) {
             if (it->revents == 0)
                 continue;
@@ -72,15 +73,15 @@ int Server::boucle( void ) {
             if (it->revents & POLLIN) {
                 // nouvelle connexion
                 if (it->fd == this->_serverFd) {
-                    // on connecte le socket du nouvel user
+                    /* on connecte le socket du nouvel user */
                     int newSocket = accept(this->_serverFd, (struct sockaddr*)&clientAddr, &clientAddrLen);
                     if (newSocket == -1) {
                         std::cerr << "Accept failed" << std::endl;
                         continue;
                     }
                     /* on l'ajoute /!\ faudra verifier le nombre /!\ */
-                    pollfd newPfd = {newSocket, POLLIN, 0};
-                    pfds.push_back(newPfd);
+                    pollfd nPfd = {newSocket, POLLIN, 0};
+                    newPfds.push_back(nPfd);
                     _clients.push_back(new Client());
                     std::cout << "Server: " << YELLOW << "new connection" << RESET << std::endl;
                 }
@@ -88,6 +89,7 @@ int Server::boucle( void ) {
             else {
             }
         }
+        pfds.insert(pfds.end(), newPfds.begin(), newPfds.end());
     }
     return SUCCESS;
 }

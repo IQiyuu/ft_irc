@@ -24,4 +24,14 @@ class Nick: public Command {
         void execute( Client *, std::string );
 };
 
+class Kick: public Command {
+    public:
+        void execute( Client *, Channel *, std::string );
+};
+
+class Join: public Command {
+    public:
+        void execute( Client *, Channel *, std::string );
+};
+
 #endif
