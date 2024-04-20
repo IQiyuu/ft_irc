@@ -27,6 +27,10 @@ class Channel {
         /* envoie un message a tous les users */
         void    broadcast( std::string );
 
+        /* getters */
+        std::string getName( void );
+        std::string getTopic( void );
+
 };
 
 #endif

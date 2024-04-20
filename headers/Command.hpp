@@ -26,12 +26,12 @@ class Nick: public Command {
 
 class Kick: public Command {
     public:
-        void execute( Client *, Channel *, std::string );
+        void execute( Client *, std::string );
 };
 
 class Join: public Command {
     public:
-        void execute( Client *, Channel *, std::string );
+        void execute( Client *, std::string );
 };
 
 #endif

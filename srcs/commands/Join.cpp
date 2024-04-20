@@ -1,6 +1,13 @@
 #include "Command.hpp"
 
-void execute(Client *client, std::string args)
+void Join::execute(Client *client, std::string args)
 { 
-    channel->addMember(client);
+   if (_serv->channelExist(args) == NULL)
+   {
+        _serv->newChannel(args);
+   }
+   else
+   {
+        _serv->_channels->addMember(client);
+   }
 }

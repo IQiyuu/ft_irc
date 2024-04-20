@@ -9,5 +9,6 @@
 #define ERROR -1
 #define SUCCESS 0
 #define POLL_TIMEOUT 100
+#define BUF_SIZE 1024
 
 #endif

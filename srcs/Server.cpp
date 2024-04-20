@@ -14,6 +14,40 @@ Server::~Server( void ) {
     std::cout << "Server " << RED << "deleted" << RESET << std::endl;
 }
 
+int Server::connect( std::vector<pollfd> newPfds, struct sockaddr_in clientAddr, socklen_t clientAddrLen) {
+    int newSocket = accept(this->_serverFd, (struct sockaddr*)&clientAddr, &clientAddrLen);
+    if (newSocket == -1) {
+        std::cerr << "Accept failed" << std::endl;
+        return ERROR;
+    }
+    pollfd nPfd = {newSocket, POLLIN, 0};
+    newPfds.push_back(nPfd);
+    _clients.push_back(new Client());
+    std::cout << "Server: " << YELLOW << "new connection" << RESET << std::endl;
+    return SUCCESS;
+}
+
+
+Client  *Server::getClient( int fd ) {
+    std::vector<Client *>::iterator it;
+
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
+        if ((*it)->getSocketFd() == fd)
+            return *it;
+    }
+    return NULL;
+}
+
+Channel *Server::channelExist(std::string args){
+    std::vector<Channel*>::iterator it;
+    for (it = _channels.begin(); it != _channels.end(); it++)
+    {
+        if ((*it)->getName() == args)
+            return *it;
+    }
+    return NULL;
+}
+
 int Server::launch( void ) {
     struct sockaddr_in serverAddr;
 
@@ -42,6 +76,29 @@ int Server::launch( void ) {
     return SUCCESS;
 }
 
+void Server::newChannel(std::string args)
+{
+    if (args.size() > 50)
+    {
+        std::cout << "Error: " << RED << " max length to create a channel is 50." << RESET << std::endl;
+        return ;
+    }
+    if (args[0] != '#')
+    {
+        std::cout << "Error: " << RED << " the first character must be a #." << RESET << std::endl;
+        return ;
+    }
+    for (int i = 0; i <= args.size(); i++)
+    {
+        if (!isalnum(args[i]) && !isalnum(args[i]) && args[i] != '_' && args[i] != '-' && args[i] != '.')
+        {
+            std::cout << "Error: " << RED << " wrong character in channel name." << RESET << std::endl;
+            return ;
+        }
+    }
+}
+
+
 /* le serveur crash car je rajoute un pollfd dans pfds pendant l'iteration. */
 int Server::boucle( void ) {
     /* fd qu'on enregistre et qu'on va ecouter */
@@ -68,25 +125,26 @@ int Server::boucle( void ) {
         std::vector<pollfd> newPfds;
         for (it = pfds.begin(); it != pfds.end(); it++) {
             if (it->revents == 0)
-                continue;
-            // si ya un event qui arrive
+                continue ;
+            /* si ya un event qui arrive */
             if (it->revents & POLLIN) {
-                // nouvelle connexion
+                /* event sur le fd du serveur = nouvelle connexion */
                 if (it->fd == this->_serverFd) {
                     /* on connecte le socket du nouvel user */
-                    int newSocket = accept(this->_serverFd, (struct sockaddr*)&clientAddr, &clientAddrLen);
-                    if (newSocket == -1) {
-                        std::cerr << "Accept failed" << std::endl;
-                        continue;
-                    }
-                    /* on l'ajoute /!\ faudra verifier le nombre /!\ */
-                    pollfd nPfd = {newSocket, POLLIN, 0};
-                    newPfds.push_back(nPfd);
-                    _clients.push_back(new Client());
-                    std::cout << "Server: " << YELLOW << "new connection" << RESET << std::endl;
+                    if (connect(newPfds, clientAddr, clientAddrLen) == ERROR)
+                        continue ;
                 }
             }
             else {
+                char buf[BUF_SIZE];
+                int byteRec = recv((*it).fd, buf, sizeof(buf), 0);
+                std::cout << "Server received: " << buf << std::endl;
+                if (byteRec <= 0) {
+                    std::cout << "Server: someone disapear" << std::endl;
+                    close((*it).fd);
+                    
+                }
+                
             }
         }
         pfds.insert(pfds.end(), newPfds.begin(), newPfds.end());

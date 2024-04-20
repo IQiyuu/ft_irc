@@ -1,3 +1,4 @@
+
 #ifndef SERVIRC
 #define SERVIRC
 
@@ -28,7 +29,7 @@ class Server {
         Channel *channelExist( std::string );
 
         /* connecte un nouveau Client au server */
-        void    connect( void );
+        int    connect( std::vector<pollfd>, struct sockaddr_in, socklen_t );
         /* deconnecte un Client du server */
         void    disconnect( void );
         /* cree un channel*/

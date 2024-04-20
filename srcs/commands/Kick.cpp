@@ -2,5 +2,4 @@
 
 void Kick::execute(Client *client, std::string args)
 { 
-    _serv->getChannel
 }

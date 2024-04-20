@@ -32,3 +32,11 @@ void Channel::removeMember(Client *client)
     }
     std::cout << "No members named " << client->getNickName() << " in " << _name << "." << std::endl;
 }
+
+std::string Channel::getName( void ) {
+    return this->_name;
+}
+
+std::string Channel::getTopic( void ) {
+    return this->_topic;
+}
