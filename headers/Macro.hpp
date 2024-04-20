@@ -10,5 +10,6 @@
 #define SUCCESS 0
 #define POLL_TIMEOUT 100
 #define BUF_SIZE 1024
+#define MAX_CON 100
 
 #endif

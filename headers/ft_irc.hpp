@@ -23,6 +23,7 @@ class Channel;
 #include <sys/types.h>
 #include <ctime>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include <vector>
 #include <map>

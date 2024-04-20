@@ -14,19 +14,32 @@ Server::~Server( void ) {
     std::cout << "Server " << RED << "deleted" << RESET << std::endl;
 }
 
-int Server::connect( std::vector<pollfd> newPfds, struct sockaddr_in clientAddr, socklen_t clientAddrLen) {
+int Server::connect( std::vector<pollfd> *pfds, struct sockaddr_in clientAddr, socklen_t clientAddrLen) {
     int newSocket = accept(this->_serverFd, (struct sockaddr*)&clientAddr, &clientAddrLen);
     if (newSocket == -1) {
         std::cerr << "Accept failed" << std::endl;
         return ERROR;
     }
     pollfd nPfd = {newSocket, POLLIN, 0};
-    newPfds.push_back(nPfd);
+    pfds->push_back(nPfd);
     _clients.push_back(new Client());
     std::cout << "Server: " << YELLOW << "new connection" << RESET << std::endl;
     return SUCCESS;
 }
 
+void Server::disconnect( std::vector<pollfd> *pfds, int fd) {
+    std::cout << "Server: someone disapear" << std::endl;
+    close(fd);
+    /* supprime le fd du user deco */
+    std::vector<pollfd>::iterator it2 = pfds->begin();
+    while (it2 != pfds->end()) {
+        if (it2->fd == fd) {
+            it2 = pfds->erase(it2);
+            break ;
+        }
+        ++it2;
+    }
+}
 
 Client  *Server::getClient( int fd ) {
     std::vector<Client *>::iterator it;
@@ -61,6 +74,7 @@ int Server::launch( void ) {
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_port = htons(6666);
+    fcntl(this->_serverFd, F_SETFL, O_NONBLOCK);
     if (bind(this->_serverFd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == ERROR) {
         std::cout << "Error: " << RED << " binding failed" << RESET << std::endl;
         return ERROR;
@@ -88,7 +102,7 @@ void Server::newChannel(std::string args)
         std::cout << "Error: " << RED << " the first character must be a #." << RESET << std::endl;
         return ;
     }
-    for (int i = 0; i <= args.size(); i++)
+    for (int i = 0; i <= (int)args.size(); i++)
     {
         if (!isalnum(args[i]) && !isalnum(args[i]) && args[i] != '_' && args[i] != '-' && args[i] != '.')
         {
@@ -122,8 +136,7 @@ int Server::boucle( void ) {
             std::cout << "Error: " << RED << "poll crashed" << RESET << std::endl;
             return ERROR;
         }
-        std::vector<pollfd> newPfds;
-        for (it = pfds.begin(); it != pfds.end(); it++) {
+        for (it = pfds.begin(); it != pfds.end(); ++it) {
             if (it->revents == 0)
                 continue ;
             /* si ya un event qui arrive */
@@ -131,23 +144,25 @@ int Server::boucle( void ) {
                 /* event sur le fd du serveur = nouvelle connexion */
                 if (it->fd == this->_serverFd) {
                     /* on connecte le socket du nouvel user */
-                    if (connect(newPfds, clientAddr, clientAddrLen) == ERROR)
-                        continue ;
+                    if (connect(&pfds, clientAddr, clientAddrLen) == ERROR)
+                        return ERROR;
+                    break ;
+                }
+                else {
+                    char buf[BUF_SIZE];
+                    int byteRec = recv((*it).fd, buf, sizeof(buf), 0);
+                    if (byteRec <= 0) {
+                        disconnect(&pfds, it->fd);
+                        break ;
+                    }
+                    std::cout << "Server received: " << buf << std::endl;
+                    /* execute les commandes */
                 }
             }
             else {
-                char buf[BUF_SIZE];
-                int byteRec = recv((*it).fd, buf, sizeof(buf), 0);
-                std::cout << "Server received: " << buf << std::endl;
-                if (byteRec <= 0) {
-                    std::cout << "Server: someone disapear" << std::endl;
-                    close((*it).fd);
-                    
-                }
-                
+                std::cout << "someone deco" << std::endl;
             }
         }
-        pfds.insert(pfds.end(), newPfds.begin(), newPfds.end());
     }
     return SUCCESS;
 }

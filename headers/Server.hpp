@@ -29,9 +29,9 @@ class Server {
         Channel *channelExist( std::string );
 
         /* connecte un nouveau Client au server */
-        int    connect( std::vector<pollfd>, struct sockaddr_in, socklen_t );
+        int    connect( std::vector<pollfd> *, struct sockaddr_in, socklen_t );
         /* deconnecte un Client du server */
-        void    disconnect( void );
+        void    disconnect( std::vector<pollfd> *, int );
         /* cree un channel*/
         void newChannel(std::string);
 
