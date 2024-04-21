@@ -1,8 +1,12 @@
 #include "ft_irc.hpp"
 
-// void signalHandler(int signum) {
-//     std::cout << "Signal SIGINT (" << signum << ") reçu. Le programme continue de s'exécuter." << std::endl;
-// }
+bool sigint = false;
+
+void signalHandler( int sig ) {
+    (void)sig;
+    sigint = true;
+}
+
 int main(int ac, char *av[]) {
     
     
@@ -15,19 +19,15 @@ int main(int ac, char *av[]) {
     // sa.sa_flags = 0;
 
     //sigaction(SIGINT, &sa, NULL);
+    signal(SIGINT, &signalHandler);
     if (ac != 3) {
         std::cout << "Error: " << RED << "./ircserv <port> <password>" RESET << std::endl;
         return 0;
     }
-    Server *serv = new Server(av[1], av[2]);
-    if (serv->launch() == ERROR) {
-        delete serv;
+    Server serv(av[1], av[2]);
+    if (serv.launch() == ERROR)
         return 1;
-    }
-    if (serv->boucle() == ERROR) {
-        delete serv;
+    if (serv.boucle() == ERROR) 
         return 1;
-    }
-    delete serv;
-    return 0;
+    return SUCCESS;
 }

@@ -1,4 +1,4 @@
 #include "Command.hpp"
 
-Command::Command(void) {}
-Command::~Command(void) {}
+Command::Command( Server *serv): _serv(serv) { }
+Command::~Command(void) { }

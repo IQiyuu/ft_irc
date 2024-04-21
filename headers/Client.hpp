@@ -20,6 +20,7 @@ class Client {
         Client( const Client & );
         // Cree un client avec le name, le nickname, le username et socketfd 
         Client (std::string, std::string, std::string, int);
+        Client( int fd );
         ~Client( void );
 
         //getter

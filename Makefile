@@ -3,7 +3,20 @@ NAME = ircserv
 F =	main\
 	Client\
 	Server\
-	Channel
+	Channel\
+	Parser\
+	commands/Command\
+	commands/Ban\
+	commands/Invite\
+	commands/Join\
+	commands/Kick\
+	commands/Mode\
+	commands/Nick\
+	commands/Pass\
+	commands/Ping\
+	commands/Pong\
+	commands/PrivMsg\
+	commands/User\
 
 S = $(foreach f, $(F), srcs/$(f).cpp)
 OBJ = $(S:.cpp=.o)

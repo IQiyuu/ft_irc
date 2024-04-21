@@ -7,9 +7,23 @@ enum ServStates {
     EXITING
 };
 
-class Client;
-class Server;
-class Channel;
+class   Client;
+class   Server;
+class   Channel;
+class   Parser;
+
+class   Command;
+class   Ban;
+class   Invite;
+class   Join;
+class   Kick;
+class   Mode;
+class   Nick;
+class   Pass;
+class   Ping;
+class   Pong;
+class   PrivMsg;
+class   User;
 
 #include <iostream>
 #include <sstream>
@@ -24,6 +38,7 @@ class Channel;
 #include <ctime>
 #include <unistd.h>
 #include <fcntl.h>
+#include <signal.h>
 
 #include <vector>
 #include <map>
@@ -33,5 +48,8 @@ class Channel;
 #include "Command.hpp"
 #include "Macro.hpp"
 #include "Server.hpp"
+#include "Parser.hpp"
+
+extern bool sigint;
 
 #endif

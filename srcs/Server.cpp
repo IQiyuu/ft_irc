@@ -1,16 +1,20 @@
 #include "Server.hpp"
 
-Server::Server( std::string port, std::string pass ): _port(port), _serverFd(0), _password(pass) {
+Server::Server( std::string port, std::string pass ): 
+    _port(port), _serverFd(0), _password(pass), _parser(new Parser(this)) {
     std::cout << "Server " << GREEN << "created" << RESET << std::endl;
 }
 
 Server::~Server( void ) {
-    for (std::vector<Channel *>::iterator it; it != this->_channels.end(); it++) {
-        delete *it;
+    while (this->_channels.size() > 0) {
+        delete this->_channels.back();
+        this->_channels.pop_back();
     }
-    for (std::vector<Client *>::iterator it; it != this->_clients.end(); it++) {
-        delete *it;
+    while (this->_clients.size() > 0) {
+        delete this->_clients.back();
+        this->_clients.pop_back();
     }
+    delete this->_parser;
     std::cout << "Server " << RED << "deleted" << RESET << std::endl;
 }
 
@@ -22,7 +26,7 @@ int Server::connect( std::vector<pollfd> *pfds, struct sockaddr_in clientAddr, s
     }
     pollfd nPfd = {newSocket, POLLIN, 0};
     pfds->push_back(nPfd);
-    _clients.push_back(new Client());
+    _clients.push_back(new Client(nPfd.fd));
     std::cout << "Server: " << YELLOW << "new connection" << RESET << std::endl;
     return SUCCESS;
 }
@@ -39,6 +43,17 @@ void Server::disconnect( std::vector<pollfd> *pfds, int fd) {
         }
         ++it2;
     }
+    /* on supprime l'instance du client deco */
+    std::vector<Client *>::iterator it3 = this->_clients.begin();
+    Client  *tmp = getClient(fd);
+    while (it3 != this->_clients.end()) {
+        if ((*it3)->getSocketFd() == fd) {
+            this->_clients.erase(it3);
+            break ;
+        }
+        ++it3;
+    }
+    delete tmp;
 }
 
 Client  *Server::getClient( int fd ) {
@@ -61,6 +76,32 @@ Channel *Server::channelExist(std::string args){
     return NULL;
 }
 
+void Server::newChannel(std::string args)
+{
+    if (args.size() > 50)
+    {
+        std::cout << "Error: " << RED << " max length to create a channel is 50." << RESET << std::endl;
+        return ;
+    }
+    if (args[0] != '#')
+    {
+        std::cout << "Error: " << RED << " the first character must be a #." << RESET << std::endl;
+        return ;
+    }
+    for (int i = 0; i <= (int)args.size(); i++)
+    {
+        if (!isalnum(args[i]) && !isalnum(args[i]) && args[i] != '_' && args[i] != '-' && args[i] != '.')
+        {
+            std::cout << "Error: " << RED << " wrong character in channel name." << RESET << std::endl;
+            return ;
+        }
+    }
+}
+
+
+/*
+ * Server launching 
+ */
 int Server::launch( void ) {
     struct sockaddr_in serverAddr;
 
@@ -90,29 +131,6 @@ int Server::launch( void ) {
     return SUCCESS;
 }
 
-void Server::newChannel(std::string args)
-{
-    if (args.size() > 50)
-    {
-        std::cout << "Error: " << RED << " max length to create a channel is 50." << RESET << std::endl;
-        return ;
-    }
-    if (args[0] != '#')
-    {
-        std::cout << "Error: " << RED << " the first character must be a #." << RESET << std::endl;
-        return ;
-    }
-    for (int i = 0; i <= (int)args.size(); i++)
-    {
-        if (!isalnum(args[i]) && !isalnum(args[i]) && args[i] != '_' && args[i] != '-' && args[i] != '.')
-        {
-            std::cout << "Error: " << RED << " wrong character in channel name." << RESET << std::endl;
-            return ;
-        }
-    }
-}
-
-
 /* le serveur crash car je rajoute un pollfd dans pfds pendant l'iteration. */
 int Server::boucle( void ) {
     /* fd qu'on enregistre et qu'on va ecouter */
@@ -129,13 +147,18 @@ int Server::boucle( void ) {
     this->_state = LISTENING;
     std::cout << "Server: " << YELLOW << "listening " << RESET << "on port " << this->_port << std::endl;
     while (this->_state == LISTENING) {
-        
-        // on attend un event sur les fd enregistres (serv fd compris)
+        /* on attend un event sur les fd enregistres (serv fd compris) */
         int pfd = poll(pfds.data(), pfds.size(), POLL_TIMEOUT);
         if (pfd == ERROR) {
+            if (sigint) {
+                this->_state = EXITING;
+                std::cout << "Server: " << YELLOW << "exiting " << RESET << "after ^C" << std::endl;
+                continue ;
+            }
             std::cout << "Error: " << RED << "poll crashed" << RESET << std::endl;
             return ERROR;
         }
+        /* on parcour tous nos pollfd pour voir si il y a des events */
         for (it = pfds.begin(); it != pfds.end(); ++it) {
             if (it->revents == 0)
                 continue ;

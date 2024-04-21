@@ -13,6 +13,8 @@ class Server {
         int                     _serverFd;
         std::string             _password;
 
+        Parser                  *_parser;
+
         Server( void );
         Server( const Server & );
         Server  *operator=( const Server & );

@@ -1,5 +1,8 @@
 #include "Command.hpp"
 
+Join::Join( Server *serv ): Command(serv) { }
+Join::~Join( void ) { }
+
 void Join::execute(Client *client, std::string args)
 {
     Channel *chan;
@@ -31,14 +34,15 @@ void Join::execute(Client *client, std::string args)
     else
     {
         std::vector<Client *>::iterator it;
-        for (it = chan.begin(); it != chan.end(); ++it) {
-            client += it->getNickname();
-            client += ' ';
+        std::vector<Client *>           memb;
+        for (it = memb.begin(); it != memb.end(); ++it) {
+            cl += (*it)->getNickName();
+            cl += ' ';
         }
         client += '\n';
         send(client->getSocketFd(), welcome.data(), msg.size(), 0);
         send(client->getSocketFd(), cl.data(), msg.size(), 0);
         send(client->getSocketFd(), msg.data(), msg.size(), 0);
-        _serv->_channels->addMember(client);
+        chan->addMember(client);
     }
 }
