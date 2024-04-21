@@ -27,15 +27,17 @@ class Server {
         Client  *getClient( std::string );
         /* recupere un client par rapport a son int */
         Client  *getClient( int );
-        /* verifie si le channel existe */
-        Channel *channelExist( std::string );
+        /* recupere le channel */
+        Channel *getChannel( std::string );
 
         /* connecte un nouveau Client au server */
         int    connect( std::vector<pollfd> *, struct sockaddr_in, socklen_t );
         /* deconnecte un Client du server */
         void    disconnect( std::vector<pollfd> *, int );
         /* cree un channel*/
-        void newChannel(std::string);
+        void    newChannel(std::string);
+        /* creer un nouveau channel et le retourne */
+        Channel *createChannel( std::string, Client * );
 
         /* parse la requete du client */
         void    parse( void );

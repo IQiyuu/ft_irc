@@ -15,7 +15,7 @@ class Channel {
         Channel &operator=( const Channel & );
     
     public:
-        Channel( std::string );
+        Channel( std::string, Client * );
         ~Channel( void );
 
         /* ajoute un membre */
@@ -30,6 +30,7 @@ class Channel {
         /* getters */
         std::string getName( void );
         std::string getTopic( void );
+        std::vector<Client *>   getMembers( void );
 
 };
 

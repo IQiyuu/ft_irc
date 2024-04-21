@@ -7,6 +7,12 @@ enum ServStates {
     EXITING
 };
 
+enum ClientStates {
+    NONE,
+    LOGED,
+    AWAY
+};
+
 class   Client;
 class   Server;
 class   Channel;
@@ -39,6 +45,7 @@ class   User;
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <strings.h>
 
 #include <vector>
 #include <map>

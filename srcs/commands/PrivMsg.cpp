@@ -4,6 +4,53 @@ PrivMsg::PrivMsg( Server *serv ): Command(serv) { }
 PrivMsg::~PrivMsg( void ) { }
 
 void PrivMsg::execute( Client *client, std::string args ) {
-    (void) client;
-    (void) args;
+    std::string receiverNname;
+
+    /* faire un truc si il n'y a pas de cible  */
+    if (!args.empty()) {
+        if (args.find(' ') != std::string::npos) {
+            receiverNname = args.substr(0, args.find(' '));
+            args = args.substr(args.find(' ') + 1, args.size());
+        }
+    }
+    else {
+        std::cout << "Error: " << RED << "empty target" << RESET << std::endl;
+        return ;
+    }
+    /* faire un truc si le message est vide */
+    if (args.empty()) {
+        std::cout << "Error: " << RED << "empty message" << RESET << std::endl;
+        return ;
+    }
+    /* on enleve les : */
+    if (args.at(0) == ':')
+        args.substr(1);
+
+    /* on envoie a un chan */
+    if (receiverNname.at(0) == '#') {
+        Channel *chan = this->_serv->getChannel(receiverNname);
+        /* faire un truc si le chan n'existe pas */
+        if (chan == NULL)
+            return ;
+        /* si le client est dans le chan broadcast */
+        std::vector<Client *>::iterator it = chan->getMembers().begin();
+        while (it != chan->getMembers().end()) {
+            if ((*it)->getNickName() == client->getNickName()) {
+                chan->broadcast(PRIVMSG_RPL(client->getPrefix(), receiverNname, args));
+                return ;
+            }
+            it++;
+        }
+        /* si le client n'est pas dans le serv faire un truc */        
+        return ;
+    }
+
+    /* on envoie a un client */
+    Client  *cible = this->_serv->getClient(receiverNname);
+    /* faire un truc si la cible n'existe pas */
+    if (cible == NULL) {
+        std::cout << "Error: " << RED << "`" << receiverNname << "`Unknow client" << RESET << std::endl;
+        return ;
+    }
+    cible->sendMsg(PRIVMSG_RPL(client->getNickName(), receiverNname, args));
 }

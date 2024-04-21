@@ -22,23 +22,36 @@ Parser::~Parser( void ) {
 }
 
 void    Parser::parse( Client *sender, std::string args ) {
-    if (args.find(' ') == std::string::npos) {
-        if (!args.compare("PING"))
-            this->_commands["Ping"]->execute(sender, args);
-        if (!args.compare("PONG"))
-            this->_commands["Pong"]->execute(sender, args);
-        return ;
-    }
-    
-    std::string command = args.substr(0, args.find(' '));
-    args.erase(0, args.find(' '));
+    std::string command;
+
+    if (args.find(' ') != std::string::npos)    
+        command = args.substr(0, args.find(' '));
+    else
+        command = args;
+    args.erase(0, args.find(' ') + 1);
 
     std::map<std::string, Command *>::iterator it;
     for(it = this->_commands.begin(); it != this->_commands.end(); ++it) {
         if (!command.compare(it->first)) {
-            it->second->execute(sender, args);
+            std::string params;
+            if (args.find('\n') != std::string::npos) {
+                params = args.substr(0, args.find('\n'));
+                args.erase(0, args.find('\n') + 1);
+                //std::cout << "°" << params << "°" << std::endl;
+            }
+            else {
+                params = args;
+                args = "";
+            }
+            it->second->execute(sender, params);
+            if (!args.empty())
+                parse(sender, args);
             return ;
         }
     }
-    std::cout << "Server: " << RED << "Command not found." << RESET << std::endl;
+    std::cout << "Server: " << RED << "`" << command << "` Command not found." << RESET << std::endl;
+    if (args.find('\r') != std::string::npos) {
+        args.erase(0, args.find('\n') + 1);
+        parse(sender, args);
+    }
 }

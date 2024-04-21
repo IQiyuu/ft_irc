@@ -15,6 +15,7 @@ Server::~Server( void ) {
         this->_clients.pop_back();
     }
     delete this->_parser;
+    close(this->_serverFd);
     std::cout << "Server " << RED << "deleted" << RESET << std::endl;
 }
 
@@ -26,7 +27,9 @@ int Server::connect( std::vector<pollfd> *pfds, struct sockaddr_in clientAddr, s
     }
     pollfd nPfd = {newSocket, POLLIN, 0};
     pfds->push_back(nPfd);
-    _clients.push_back(new Client(nPfd.fd));
+    Client  *nClient =new Client(nPfd.fd);
+    _clients.push_back(nClient);
+    //nClient->sendReply(WELCOME_RPL(nClient->getNickName()));
     std::cout << "Server: " << YELLOW << "new connection" << RESET << std::endl;
     return SUCCESS;
 }
@@ -56,6 +59,16 @@ void Server::disconnect( std::vector<pollfd> *pfds, int fd) {
     delete tmp;
 }
 
+Client  *Server::getClient( std::string nname ) {
+    std::vector<Client *>::iterator it;
+
+    for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
+        if ((*it)->getNickName() == nname)
+            return *it;
+    }
+    return NULL;
+}
+
 Client  *Server::getClient( int fd ) {
     std::vector<Client *>::iterator it;
 
@@ -66,7 +79,7 @@ Client  *Server::getClient( int fd ) {
     return NULL;
 }
 
-Channel *Server::channelExist(std::string args){
+Channel *Server::getChannel(std::string args){
     std::vector<Channel*>::iterator it;
     for (it = _channels.begin(); it != _channels.end(); it++)
     {
@@ -98,6 +111,14 @@ void Server::newChannel(std::string args)
     }
 }
 
+/* ajoute un nouveau channel au server */
+Channel *Server::createChannel( std::string name, Client *client ) {
+    Channel *chan;
+
+    chan = new Channel(name, client);
+    this->_channels.push_back(chan);
+    return (chan);
+}
 
 /*
  * Server launching 
@@ -173,13 +194,15 @@ int Server::boucle( void ) {
                 }
                 else {
                     char buf[BUF_SIZE];
+                    bzero(buf, BUF_SIZE);
                     int byteRec = recv((*it).fd, buf, sizeof(buf), 0);
                     if (byteRec <= 0) {
                         disconnect(&pfds, it->fd);
                         break ;
                     }
-                    std::cout << "Server received: " << buf << std::endl;
+                    std::cout << "=Server received: " << buf << "=" << std::endl;
                     /* execute les commandes */
+                    this->_parser->parse(getClient(it->fd), buf);
                 }
             }
             else {
