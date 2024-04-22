@@ -33,10 +33,11 @@ void PrivMsg::execute( Client *client, std::string args ) {
         if (chan == NULL)
             return ;
         /* si le client est dans le chan broadcast */
-        std::vector<Client *>::iterator it = chan->getMembers().begin();
-        while (it != chan->getMembers().end()) {
+        std::vector<Client *> memb = chan->getMembers();
+        std::vector<Client *>::iterator it = memb.begin();
+        while (it != memb.end()) {
             if ((*it)->getNickName() == client->getNickName()) {
-                chan->broadcast(PRIVMSG_RPL(client->getPrefix(), receiverNname, args));
+                chan->broadcast(PRIVMSG_RPL(client->getNickName(), receiverNname, args));
                 return ;
             }
             it++;

@@ -62,8 +62,9 @@ void Server::disconnect( std::vector<pollfd> *pfds, int fd) {
 Client  *Server::getClient( std::string nname ) {
     std::vector<Client *>::iterator it;
 
-    for (it = this->_clients.begin(); it != this->_clients.end(); it++) {
-        if ((*it)->getNickName() == nname)
+    
+    for (it = _clients.begin(); it != _clients.end(); it++) {
+        if (!nname.compare((*it)->getNickName()))
             return *it;
     }
     return NULL;
@@ -89,6 +90,14 @@ Channel *Server::getChannel(std::string args){
     return NULL;
 }
 
+std::vector<Client *>   Server::getClients( void ) const {
+    return this->_clients;
+}
+
+std::vector<Channel *>  Server::getChannels( void ) const {
+    return this->_channels;
+}
+
 void Server::newChannel(std::string args)
 {
     if (args.size() > 50)
@@ -112,10 +121,10 @@ void Server::newChannel(std::string args)
 }
 
 /* ajoute un nouveau channel au server */
-Channel *Server::createChannel( std::string name, Client *client ) {
+Channel *Server::createChannel( std::string name ) {
     Channel *chan;
 
-    chan = new Channel(name, client);
+    chan = new Channel(name);
     this->_channels.push_back(chan);
     return (chan);
 }
@@ -135,7 +144,7 @@ int Server::launch( void ) {
     /* on bind la socket sur le port */
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(6666);
+    serverAddr.sin_port = htons(atoi(this->_port.data()));
     fcntl(this->_serverFd, F_SETFL, O_NONBLOCK);
     if (bind(this->_serverFd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == ERROR) {
         std::cout << "Error: " << RED << " binding failed" << RESET << std::endl;

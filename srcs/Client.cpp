@@ -73,11 +73,19 @@ void    Client::setState( int state ) {
 
 /* envoie un message au client */
 void    Client::sendMsg( std::string msg ) {
+    std::cout << _nickname << std::endl;
     send(this->_socketFd, msg.data(), msg.size(), 0);
 }
 
 void    Client::sendReply( std::string msg ) {
     msg = ":ft_irc " + msg;
-    std::cout << msg << std::endl;
+    //std::cout << msg << std::endl;
     send(this->_socketFd, msg.data(), msg.size(), 0);
+}
+
+std::ostream &operator<<(std::ostream &os, Client &ref ) {
+    os << "nn: -" << ref.getNickName() << "-" << std::endl;
+    os << "un: -" << ref.getUsername() << "-" << std::endl;
+    os << "rn: -" << ref.getRealname() << "-" << std::endl;
+    return os;
 }

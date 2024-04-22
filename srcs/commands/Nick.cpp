@@ -19,6 +19,7 @@ void Nick::execute(Client *client, std::string args)
     //         return;
     //     }
     // }
+    std::cout << "£" << args << "£" << std::endl;
     client->setNickName(args);
     client->sendReply(WELCOME_RPL(client->getNickName()));
     return;

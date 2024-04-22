@@ -43,4 +43,6 @@ class Client {
 
 };
 
+std::ostream &operator<<(std::ostream &, Client & );
+
 #endif

@@ -35,7 +35,7 @@ void    Parser::parse( Client *sender, std::string args ) {
         if (!command.compare(it->first)) {
             std::string params;
             if (args.find('\n') != std::string::npos) {
-                params = args.substr(0, args.find('\n'));
+                params = args.substr(0, args.find('\r'));
                 args.erase(0, args.find('\n') + 1);
                 //std::cout << "°" << params << "°" << std::endl;
             }
@@ -50,7 +50,7 @@ void    Parser::parse( Client *sender, std::string args ) {
         }
     }
     std::cout << "Server: " << RED << "`" << command << "` Command not found." << RESET << std::endl;
-    if (args.find('\r') != std::string::npos) {
+    if (args.find('\n') != std::string::npos) {
         args.erase(0, args.find('\n') + 1);
         parse(sender, args);
     }

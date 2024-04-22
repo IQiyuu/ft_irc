@@ -1,8 +1,7 @@
 #include "Channel.hpp"
 
-Channel::Channel(std::string name, Client *client ):_name(name) {
+Channel::Channel(std::string name ):_name(name) {
     std::cout << "Channel: " << _name << GREEN << " created." << RESET << std::endl;
-    _members.push_back(client);
 }
 Channel::~Channel(void){
     std::cout << "Channel: " << _name << RED << " deleted." << RESET << std::endl;
@@ -49,6 +48,8 @@ std::vector<Client *>   Channel::getMembers( void ) {
 void    Channel::broadcast( std::string msg ) {
     std::vector<Client *>::iterator it;
 
-    for (it = this->_members.begin(); it != this->_members.end(); ++it)
+    for (it = this->_members.begin(); it != this->_members.end(); ++it) {
+        std::cout << (*it)->getNickName() << std::endl;
         (*it)->sendMsg(msg);
+    }
 }
