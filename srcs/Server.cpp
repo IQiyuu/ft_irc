@@ -38,7 +38,6 @@ int Server::connect( struct sockaddr_in clientAddr, socklen_t clientAddrLen) {
 void Server::disconnect( int fd ) {
     std::cout << "Server: " << YELLOW << "someone disapeared" << RESET << std::endl;
     Client *tmp = getClient(fd);
-    close(fd);
     /* supprime le fd du user deco */
     std::vector<pollfd>::iterator it2 = this->_pfds.begin();
     while (it2 != this->_pfds.end()) {
@@ -57,6 +56,7 @@ void Server::disconnect( int fd ) {
         }
         ++it3;
     }
+    close(fd);
     delete tmp;
 }
 
@@ -201,6 +201,8 @@ int Server::boucle( void ) {
         }
         /* on parcour tous nos pollfd pour voir si il y a des events */
         for (it = this->_pfds.begin(); it != this->_pfds.end(); ++it) {
+            if (it->revents == 0)
+                continue ;
             /* si ya un event qui arrive */
             if (it->revents & POLLIN) {
                 /* event sur le fd du serveur = nouvelle connexion */
