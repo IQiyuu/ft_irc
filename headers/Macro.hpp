@@ -25,5 +25,6 @@
 #define PRIVMSG_RPL(nn, cible, msg) ":" + nn + " PRIVMSG " + cible + " " + msg
 #define CAPLS_RPL() "CAP * LS :none"
 #define QUIT_RPL(nn, rea) ":" + nn + " QUIT " + rea
+#define NICK_RPL(ann, nn) ":" + ann + " NICK :" + nn
 
 #endif

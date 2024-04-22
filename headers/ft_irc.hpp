@@ -47,6 +47,9 @@ class   User;
 #include <signal.h>
 #include <strings.h>
 
+// verif si autorise
+#include <algorithm>
+
 #include <vector>
 #include <map>
 

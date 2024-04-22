@@ -7,5 +7,6 @@ Quit::~Quit( void ) { }
 void Quit::execute( Client *sender, std::string args ) {
     sender->sendReply(QUIT_RPL(sender->getNickName(), args));
     /* broadcast a tous les channels ou il etait co qu'il se deco */
+    this->_serv->sendToConnected(sender, QUIT_RPL(sender->getNickName(), args));
     this->_serv->disconnect(sender->getSocketFd());
 }

@@ -47,6 +47,8 @@ class Server {
         /* recupere la liste des channels (existants) du server */
         std::vector<Channel *>  getChannels( void ) const;
 
+        void  sendToConnected( Client *, std::string );
+
         /************************************/
         /*               UTILS              */
         /************************************/

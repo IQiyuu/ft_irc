@@ -35,8 +35,9 @@ int Server::connect( struct sockaddr_in clientAddr, socklen_t clientAddrLen) {
 }
 
 /* on deconne le client fd */
-void Server::disconnect( int fd) {
+void Server::disconnect( int fd ) {
     std::cout << "Server: " << YELLOW << "someone disapeared" << RESET << std::endl;
+    Client *tmp = getClient(fd);
     close(fd);
     /* supprime le fd du user deco */
     std::vector<pollfd>::iterator it2 = this->_pfds.begin();
@@ -49,7 +50,6 @@ void Server::disconnect( int fd) {
     }
     /* on supprime l'instance du client deco */
     std::vector<Client *>::iterator it3 = this->_clients.begin();
-    Client  *tmp = getClient(fd);
     while (it3 != this->_clients.end()) {
         if ((*it3)->getSocketFd() == fd) {
             this->_clients.erase(it3);
@@ -99,6 +99,18 @@ std::vector<Client *>   Server::getClients( void ) const {
 
 std::vector<Channel *>  Server::getChannels( void ) const {
     return this->_channels;
+}
+
+void    Server::sendToConnected( Client *client, std::string msg ) {
+    std::vector<Channel *>::iterator it;
+    
+    for (it = this->_channels.begin(); it != this->_channels.end(); ++it) {
+        std::vector<Client *> mm = (*it)->getMembers();
+        if (std::find(mm.begin(), mm.end(), client) != mm.end()) {
+            std::cout << "send" << std::endl;
+            (*it)->broadcast(msg, client);
+        }
+    }
 }
 
 void Server::newChannel(std::string args)
@@ -189,8 +201,6 @@ int Server::boucle( void ) {
         }
         /* on parcour tous nos pollfd pour voir si il y a des events */
         for (it = this->_pfds.begin(); it != this->_pfds.end(); ++it) {
-            if (it->revents == 0)
-                continue ;
             /* si ya un event qui arrive */
             if (it->revents & POLLIN) {
                 /* event sur le fd du serveur = nouvelle connexion */
