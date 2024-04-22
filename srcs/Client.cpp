@@ -45,16 +45,6 @@ int Client::getState( void ) {
     return this->_state;
 }
 
-/* recupere le prefix du client sous forme de std::string */
-std::string Client::getPrefix( void ) {
-    std::string prefix = this->_nickname;
-
-    prefix += (this->_username.empty() ? "" : "!") + this->_username;
-    prefix += (this->_realname.empty() ? "" : "!") + this->_realname;
-    prefix += " ";
-    return prefix;
-}
-
 void Client::setNickName(std::string name){
     this->_nickname = name;
 }
@@ -71,18 +61,19 @@ void    Client::setState( int state ) {
     this->_state = state;
 }
 
-/* envoie un message au client */
+/* envoie un message au client (genre PRIVMSG)*/
 void    Client::sendMsg( std::string msg ) {
-    std::cout << _nickname << std::endl;
+    msg += "\r\n";
     send(this->_socketFd, msg.data(), msg.size(), 0);
 }
 
+/* sendReply = reponse au sender (genre JOIN)*/
 void    Client::sendReply( std::string msg ) {
-    msg = ":ft_irc " + msg;
-    //std::cout << msg << std::endl;
+    msg = ":ft_irc " + msg + "\r\n";
     send(this->_socketFd, msg.data(), msg.size(), 0);
 }
 
+/* fonction pour afficher un client (debug) */
 std::ostream &operator<<(std::ostream &os, Client &ref ) {
     os << "nn: -" << ref.getNickName() << "-" << std::endl;
     os << "un: -" << ref.getUsername() << "-" << std::endl;

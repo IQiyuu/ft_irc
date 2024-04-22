@@ -14,11 +14,13 @@ Channel &Channel::operator=(const Channel &ref)
     return *this;
 }
 
+/* ajoute un client aux membres du channel */
 void Channel::addMember(Client *client)
 {
     _members.push_back(client);
 }
 
+/* supprime le client des membres du channel */
 void Channel::removeMember(Client *client)
 {
     std::vector<Client*>::iterator it;
@@ -45,11 +47,20 @@ std::vector<Client *>   Channel::getMembers( void ) {
     return this->_members;
 }
 
+/* envoie un message a tous les membres du channel */
 void    Channel::broadcast( std::string msg ) {
     std::vector<Client *>::iterator it;
 
     for (it = this->_members.begin(); it != this->_members.end(); ++it) {
-        std::cout << (*it)->getNickName() << std::endl;
         (*it)->sendMsg(msg);
+    }
+}
+/* envoie un message a tous les membres du channel sauf a notHim */
+void    Channel::broadcast( std::string msg, Client *notHim ) {
+    std::vector<Client *>::iterator it;
+
+    for (it = this->_members.begin(); it != this->_members.end(); ++it) {
+        if ((*it)->getNickName().compare(notHim->getNickName()))
+            (*it)->sendMsg(msg);
     }
 }

@@ -3,6 +3,7 @@
 Nick::Nick( Server *serv ): Command(serv) { }
 Nick::~Nick( void ) { }
 
+/* change le nickname du client */
 // ajouter un check pour voir si le pseudo exite deja et voir si c'est pas un nom de commande
 void Nick::execute(Client *client, std::string args)
 {
@@ -19,8 +20,8 @@ void Nick::execute(Client *client, std::string args)
     //         return;
     //     }
     // }
-    std::cout << "£" << args << "£" << std::endl;
     client->setNickName(args);
     client->sendReply(WELCOME_RPL(client->getNickName()));
+    /* faire un broadcast sur tous les channels presents pour dire qu'il a swap de nickname */
     return;
 }

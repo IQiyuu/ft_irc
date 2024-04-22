@@ -19,29 +19,30 @@ Server::~Server( void ) {
     std::cout << "Server " << RED << "deleted" << RESET << std::endl;
 }
 
-int Server::connect( std::vector<pollfd> *pfds, struct sockaddr_in clientAddr, socklen_t clientAddrLen) {
+/* on connecte un nouveau client */
+int Server::connect( struct sockaddr_in clientAddr, socklen_t clientAddrLen) {
     int newSocket = accept(this->_serverFd, (struct sockaddr*)&clientAddr, &clientAddrLen);
     if (newSocket == -1) {
         std::cerr << "Accept failed" << std::endl;
         return ERROR;
     }
     pollfd nPfd = {newSocket, POLLIN, 0};
-    pfds->push_back(nPfd);
+    this->_pfds.push_back(nPfd);
     Client  *nClient =new Client(nPfd.fd);
     _clients.push_back(nClient);
-    //nClient->sendReply(WELCOME_RPL(nClient->getNickName()));
     std::cout << "Server: " << YELLOW << "new connection" << RESET << std::endl;
     return SUCCESS;
 }
 
-void Server::disconnect( std::vector<pollfd> *pfds, int fd) {
-    std::cout << "Server: someone disapear" << std::endl;
+/* on deconne le client fd */
+void Server::disconnect( int fd) {
+    std::cout << "Server: " << YELLOW << "someone disapeared" << RESET << std::endl;
     close(fd);
     /* supprime le fd du user deco */
-    std::vector<pollfd>::iterator it2 = pfds->begin();
-    while (it2 != pfds->end()) {
+    std::vector<pollfd>::iterator it2 = this->_pfds.begin();
+    while (it2 != this->_pfds.end()) {
         if (it2->fd == fd) {
-            it2 = pfds->erase(it2);
+            it2 = this->_pfds.erase(it2);
             break ;
         }
         ++it2;
@@ -59,10 +60,10 @@ void Server::disconnect( std::vector<pollfd> *pfds, int fd) {
     delete tmp;
 }
 
+/* cherche le client avec son nickname*/
 Client  *Server::getClient( std::string nname ) {
     std::vector<Client *>::iterator it;
 
-    
     for (it = _clients.begin(); it != _clients.end(); it++) {
         if (!nname.compare((*it)->getNickName()))
             return *it;
@@ -70,6 +71,7 @@ Client  *Server::getClient( std::string nname ) {
     return NULL;
 }
 
+/* cherche le client avec son fd */
 Client  *Server::getClient( int fd ) {
     std::vector<Client *>::iterator it;
 
@@ -80,6 +82,7 @@ Client  *Server::getClient( int fd ) {
     return NULL;
 }
 
+/* cherche le channel avec son name  */
 Channel *Server::getChannel(std::string args){
     std::vector<Channel*>::iterator it;
     for (it = _channels.begin(); it != _channels.end(); it++)
@@ -129,9 +132,7 @@ Channel *Server::createChannel( std::string name ) {
     return (chan);
 }
 
-/*
- * Server launching 
- */
+/* lance le server */
 int Server::launch( void ) {
     struct sockaddr_in serverAddr;
 
@@ -163,8 +164,6 @@ int Server::launch( void ) {
 
 /* le serveur crash car je rajoute un pollfd dans pfds pendant l'iteration. */
 int Server::boucle( void ) {
-    /* fd qu'on enregistre et qu'on va ecouter */
-    std::vector<pollfd> pfds;
     struct sockaddr_in clientAddr;
     socklen_t clientAddrLen = sizeof(clientAddr);
     std::vector<pollfd>::iterator it;
@@ -172,13 +171,13 @@ int Server::boucle( void ) {
     // on ajoute le fd du server a ecouter (car le server recoit les requetes)
     pollfd serverPfd = {this->_serverFd, POLLIN, 0};
 
-    pfds.push_back(serverPfd);
+    this->_pfds.push_back(serverPfd);
 
     this->_state = LISTENING;
     std::cout << "Server: " << YELLOW << "listening " << RESET << "on port " << this->_port << std::endl;
     while (this->_state == LISTENING) {
         /* on attend un event sur les fd enregistres (serv fd compris) */
-        int pfd = poll(pfds.data(), pfds.size(), POLL_TIMEOUT);
+        int pfd = poll(this->_pfds.data(), this->_pfds.size(), POLL_TIMEOUT);
         if (pfd == ERROR) {
             if (sigint) {
                 this->_state = EXITING;
@@ -189,7 +188,7 @@ int Server::boucle( void ) {
             return ERROR;
         }
         /* on parcour tous nos pollfd pour voir si il y a des events */
-        for (it = pfds.begin(); it != pfds.end(); ++it) {
+        for (it = this->_pfds.begin(); it != this->_pfds.end(); ++it) {
             if (it->revents == 0)
                 continue ;
             /* si ya un event qui arrive */
@@ -197,25 +196,24 @@ int Server::boucle( void ) {
                 /* event sur le fd du serveur = nouvelle connexion */
                 if (it->fd == this->_serverFd) {
                     /* on connecte le socket du nouvel user */
-                    if (connect(&pfds, clientAddr, clientAddrLen) == ERROR)
+                    if (connect(clientAddr, clientAddrLen) == ERROR)
                         return ERROR;
                     break ;
                 }
                 else {
+                    /* on recoit une requete */
                     char buf[BUF_SIZE];
                     bzero(buf, BUF_SIZE);
                     int byteRec = recv((*it).fd, buf, sizeof(buf), 0);
+                    /* si la requete a 0b on deco */
                     if (byteRec <= 0) {
-                        disconnect(&pfds, it->fd);
+                        disconnect(it->fd);
                         break ;
                     }
                     std::cout << "=Server received: " << buf << "=" << std::endl;
                     /* execute les commandes */
                     this->_parser->parse(getClient(it->fd), buf);
                 }
-            }
-            else {
-                std::cout << "someone deco" << std::endl;
             }
         }
     }

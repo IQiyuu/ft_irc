@@ -14,6 +14,9 @@ class Parser {
         Parser( Server * );
         ~Parser( void );
 
+        /************************************/
+        /*            -_('o')_-             */
+        /************************************/
         void parse( Client *, std::string );
 };
 

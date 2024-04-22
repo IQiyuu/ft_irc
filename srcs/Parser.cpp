@@ -2,16 +2,20 @@
 
 Parser::Parser( Server *serv ) {
     _commands["BAN"] = new Ban(serv);
+    _commands["CAP"] = new Cap(serv);
     _commands["INVITE"] = new Invite(serv);
     _commands["JOIN"] = new Join(serv);
     _commands["KICK"] = new Kick(serv);
     _commands["MODE"] = new Mode(serv);
     _commands["NICK"] = new Nick(serv);
+    _commands["PART"] = new Part(serv);
     _commands["PASS"] = new Pass(serv);
     _commands["PING"] = new Ping(serv);
     _commands["PONG"] = new Pong(serv);
+    _commands["QUIT"] = new Quit(serv);
     _commands["PRIVMSG"] = new PrivMsg(serv);
     _commands["USER"] = new User(serv);
+    _commands["WHO"] = new Who(serv);
 }
 
 Parser::~Parser( void ) {

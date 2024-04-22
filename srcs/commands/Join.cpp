@@ -3,6 +3,7 @@
 Join::Join( Server *serv ): Command(serv) { }
 Join::~Join( void ) { }
 
+/* le client rejoind un channel ou le creer si il n'existe pas*/
 void Join::execute(Client *client, std::string args)
 {
     Channel *chan;
@@ -11,10 +12,8 @@ void Join::execute(Client *client, std::string args)
     if (args.empty())
         return ;
     /* creer le channel si il n'existe pas */
-    if ((chan = _serv->getChannel(args)) == NULL) {
-        std::cout << "NOUVEAU" << std::endl;
+    if ((chan = _serv->getChannel(args)) == NULL) 
         chan = _serv->createChannel(args);
-    }
     chan->addMember(client);
     std::string clientList;
 
@@ -32,6 +31,7 @@ void Join::execute(Client *client, std::string args)
     client->sendReply(NO_TOPIC(client->getNickName(), chan->getName()));
     client->sendReply(CLIENTLIST(clientList, client->getNickName(), chan->getName()));
     client->sendReply(ENDOF_CLIENTLIST(client->getNickName(), chan->getName()));
+    client->sendReply(WELCOMECHAN_DLC(chan->getName()));
     /* ajoute le nouveau client au channel */
-    chan->broadcast(JOIN_RPL(client->getPrefix(), chan->getName()));
+    chan->broadcast(JOIN_RPL(client->getNickName(), chan->getName()));
 }

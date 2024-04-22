@@ -3,6 +3,7 @@
 PrivMsg::PrivMsg( Server *serv ): Command(serv) { }
 PrivMsg::~PrivMsg( void ) { }
 
+/* messages prives */
 void PrivMsg::execute( Client *client, std::string args ) {
     std::string receiverNname;
 
@@ -37,7 +38,7 @@ void PrivMsg::execute( Client *client, std::string args ) {
         std::vector<Client *>::iterator it = memb.begin();
         while (it != memb.end()) {
             if ((*it)->getNickName() == client->getNickName()) {
-                chan->broadcast(PRIVMSG_RPL(client->getNickName(), receiverNname, args));
+                chan->broadcast(PRIVMSG_RPL(client->getNickName(), receiverNname, args), client);
                 return ;
             }
             it++;
