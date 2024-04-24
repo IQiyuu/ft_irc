@@ -46,6 +46,8 @@ class Server {
         std::vector<Client *>   getClients( void ) const;
         /* recupere la liste des channels (existants) du server */
         std::vector<Channel *>  getChannels( void ) const;
+        /* recupere le password */
+        std::string             getPass( void ) const;
 
         void  sendToConnected( Client *, std::string );
 

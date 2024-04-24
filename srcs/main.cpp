@@ -9,7 +9,7 @@ void signalHandler( int sig ) {
 
 int main(int ac, char *av[]) {
     
-    
+    srand(time(NULL));
     // struct sigaction sa;
 
     // sa.sa_handler = signalHandler;

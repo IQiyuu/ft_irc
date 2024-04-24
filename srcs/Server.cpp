@@ -45,7 +45,8 @@ void Server::disconnect( int fd ) {
             it2 = this->_pfds.erase(it2);
             break ;
         }
-        ++it2;
+        else
+            ++it2;
     }
     /* on supprime l'instance du client deco */
     std::vector<Client *>::iterator it3 = this->_clients.begin();
@@ -99,6 +100,10 @@ std::vector<Client *>   Server::getClients( void ) const {
 
 std::vector<Channel *>  Server::getChannels( void ) const {
     return this->_channels;
+}
+
+std::string Server::getPass( void ) const {
+    return this->_password;
 }
 
 void    Server::sendToConnected( Client *client, std::string msg ) {
@@ -194,15 +199,13 @@ int Server::boucle( void ) {
             if (sigint) {
                 this->_state = EXITING;
                 std::cout << "Server: " << YELLOW << "exiting " << RESET << "after ^C" << std::endl;
-                continue ;
+                break ;
             }
             std::cout << "Error: " << RED << "poll crashed" << RESET << std::endl;
             return ERROR;
         }
         /* on parcour tous nos pollfd pour voir si il y a des events */
-        for (it = this->_pfds.begin(); it != this->_pfds.end(); ++it) {
-            if (it->revents == 0)
-                continue ;
+        for (it = this->_pfds.begin(); it != this->_pfds.end(); it++) {
             /* si ya un event qui arrive */
             if (it->revents & POLLIN) {
                 /* event sur le fd du serveur = nouvelle connexion */
@@ -224,7 +227,8 @@ int Server::boucle( void ) {
                     }
                     std::cout << "=Server received: " << buf << "=" << std::endl;
                     /* execute les commandes */
-                    this->_parser->parse(getClient(it->fd), buf);
+                    if (this->_parser->parse(getClient(it->fd), buf))
+                        break ;
                 }
             }
         }

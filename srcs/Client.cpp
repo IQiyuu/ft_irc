@@ -73,6 +73,11 @@ void    Client::sendReply( std::string msg ) {
     send(this->_socketFd, msg.data(), msg.size(), 0);
 }
 
+void    Client::welcome( void ) {
+    sendMsg(WELCOME_RPL(this->_nickname));
+    this->_state = LOGED;
+}
+
 /* fonction pour afficher un client (debug) */
 std::ostream &operator<<(std::ostream &os, Client &ref ) {
     os << "nn: -" << ref.getNickName() << "-" << std::endl;

@@ -7,4 +7,6 @@ Cap::~Cap( void ) { }
 void Cap::execute( Client *sender, std::string args ) {
     if (!args.compare("LS"))
         sender->sendReply(CAPLS_RPL());
+    if (!args.compare("END"))
+        sender->sendReply(CAPEND_RPL());
 }

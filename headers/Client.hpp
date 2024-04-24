@@ -51,6 +51,7 @@ class Client {
         void    sendMsg( std::string );
         void    sendReply( std::string msg );
 
+        void    welcome( void );
 };
 
 /* afficher un client (debug) */

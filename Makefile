@@ -16,7 +16,6 @@ F =	main\
 	commands/Part\
 	commands/Pass\
 	commands/Ping\
-	commands/Pong\
 	commands/PrivMsg\
 	commands/User\
 	commands/Quit\

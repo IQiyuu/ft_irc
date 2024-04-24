@@ -23,8 +23,11 @@
 
 #define JOIN_RPL(nn, chan) ":" + nn + " JOIN " + chan
 #define PRIVMSG_RPL(nn, cible, msg) ":" + nn + " PRIVMSG " + cible + " " + msg
-#define CAPLS_RPL() "CAP * LS :none"
+#define CAPLS_RPL() "CAP * LS :multi_prefix"
+#define CAPEND_RPL() "CAP * ACK :End of CAP negotiation"
 #define QUIT_RPL(nn, rea) ":" + nn + " QUIT " + rea
 #define NICK_RPL(ann, nn) ":" + ann + " NICK :" + nn
+#define PING_RPL(nn, arg) "PONG " + arg
+#define INVITE_RPL(sender, target, chan) ":" + sender + " INVITE " + target + " :" + chan
 
 #endif

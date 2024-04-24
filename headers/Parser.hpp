@@ -17,7 +17,7 @@ class Parser {
         /************************************/
         /*            -_('o')_-             */
         /************************************/
-        void parse( Client *, std::string );
+        int parse( Client *, std::string );
 };
 
 #endif

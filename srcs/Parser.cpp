@@ -11,7 +11,6 @@ Parser::Parser( Server *serv ) {
     _commands["PART"] = new Part(serv);
     _commands["PASS"] = new Pass(serv);
     _commands["PING"] = new Ping(serv);
-    _commands["PONG"] = new Pong(serv);
     _commands["QUIT"] = new Quit(serv);
     _commands["PRIVMSG"] = new PrivMsg(serv);
     _commands["USER"] = new User(serv);
@@ -25,7 +24,7 @@ Parser::~Parser( void ) {
     }
 }
 
-void    Parser::parse( Client *sender, std::string args ) {
+int    Parser::parse( Client *sender, std::string args ) {
     std::string command;
 
     if (args.find(' ') != std::string::npos)    
@@ -41,7 +40,6 @@ void    Parser::parse( Client *sender, std::string args ) {
             if (args.find('\n') != std::string::npos) {
                 params = args.substr(0, args.find('\r'));
                 args.erase(0, args.find('\n') + 1);
-                //std::cout << "°" << params << "°" << std::endl;
             }
             else {
                 params = args;
@@ -50,7 +48,9 @@ void    Parser::parse( Client *sender, std::string args ) {
             it->second->execute(sender, params);
             if (!args.empty())
                 parse(sender, args);
-            return ;
+            if (!command.compare("QUIT"))
+                return 1;
+            return 0;
         }
     }
     std::cout << "Server: " << RED << "`" << command << "` Command not found." << RESET << std::endl;
@@ -58,4 +58,5 @@ void    Parser::parse( Client *sender, std::string args ) {
         args.erase(0, args.find('\n') + 1);
         parse(sender, args);
     }
+    return 0;
 }
