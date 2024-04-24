@@ -88,6 +88,7 @@ Channel *Server::getChannel(std::string args){
     std::vector<Channel*>::iterator it;
     for (it = _channels.begin(); it != _channels.end(); it++)
     {
+        std::cout << (*it)->getName() << " " << args << std::endl;
         if ((*it)->getName() == args)
             return *it;
     }

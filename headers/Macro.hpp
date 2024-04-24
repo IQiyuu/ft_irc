@@ -25,6 +25,7 @@
 #define PRIVMSG_RPL(nn, cible, msg) ":" + nn + " PRIVMSG " + cible + " " + msg
 #define CAPLS_RPL() "CAP * LS :multi_prefix"
 #define CAPEND_RPL() "CAP * ACK :End of CAP negotiation"
+#define PART_RPL(nn, chan, rea) ":" + nn + " PART " + chan + " " + rea
 #define QUIT_RPL(nn, rea) ":" + nn + " QUIT " + rea
 #define NICK_RPL(ann, nn) ":" + ann + " NICK :" + nn
 #define PING_RPL(nn, arg) "PONG " + arg

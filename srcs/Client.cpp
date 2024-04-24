@@ -74,7 +74,7 @@ void    Client::sendReply( std::string msg ) {
 }
 
 void    Client::welcome( void ) {
-    sendMsg(WELCOME_RPL(this->_nickname));
+    sendReply(WELCOME_RPL(this->_nickname));
     this->_state = LOGED;
 }
 
