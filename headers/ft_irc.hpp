@@ -47,6 +47,7 @@ class   User;
 #include <fcntl.h>
 #include <signal.h>
 #include <strings.h>
+#include <netdb.h>
 
 // verif si autorise
 #include <algorithm>

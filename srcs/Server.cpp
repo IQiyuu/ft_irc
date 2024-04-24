@@ -28,7 +28,12 @@ int Server::connect( struct sockaddr_in clientAddr, socklen_t clientAddrLen) {
     }
     pollfd nPfd = {newSocket, POLLIN, 0};
     this->_pfds.push_back(nPfd);
-    Client  *nClient =new Client(nPfd.fd);
+    
+    char hostname[NI_MAXHOST];
+    int res = getnameinfo((struct sockaddr *) &clientAddr, sizeof(clientAddr), hostname, NI_MAXHOST, NULL, 0, NI_NUMERICSERV);
+    if (res != 0)
+        std::cout << "Error: " << RED << "getnameinfo crash" << RESET << std::endl;
+    Client  *nClient = new Client(nPfd.fd, hostname);
     _clients.push_back(nClient);
     std::cout << "Server: " << YELLOW << "new connection" << RESET << std::endl;
     return SUCCESS;
@@ -88,7 +93,6 @@ Channel *Server::getChannel(std::string args){
     std::vector<Channel*>::iterator it;
     for (it = _channels.begin(); it != _channels.end(); it++)
     {
-        std::cout << (*it)->getName() << " " << args << std::endl;
         if ((*it)->getName() == args)
             return *it;
     }
@@ -113,7 +117,6 @@ void    Server::sendToConnected( Client *client, std::string msg ) {
     for (it = this->_channels.begin(); it != this->_channels.end(); ++it) {
         std::vector<Client *> mm = (*it)->getMembers();
         if (std::find(mm.begin(), mm.end(), client) != mm.end()) {
-            std::cout << "send" << std::endl;
             (*it)->broadcast(msg, client);
         }
     }

@@ -15,23 +15,21 @@ void Join::execute(Client *client, std::string args)
     if ((chan = _serv->getChannel(args)) == NULL) 
         chan = _serv->createChannel(args);
     chan->addMember(client);
-    std::string clientList;
+   // std::string clientList;
 
-    std::vector<Client *>::iterator it;
-    std::vector<Client *>           memb = chan->getMembers();
-    /* creer le string de la liste des users */
-    for (it = memb.begin(); it != memb.end(); ++it) {
-        clientList = clientList + (*it)->getNickName();
-        clientList = clientList + ' ';
-    }
+    // std::vector<Client *>::iterator it;
+    // std::vector<Client *>           memb = chan->getMembers();
+    // /* creer le string de la liste des users */
+    // for (it = memb.begin(); it != memb.end(); ++it) {
+    //     //std::cout << WHOCHAN(sender->getNickName(), chan->getName(), (*it)->getNickName(), (*it)->getHostName(), (*it)->getUsername()) << std::endl;
+    //     client->sendReply(WHOCHAN(client->getNickName(), chan->getName(), (*it)->getNickName(), (*it)->getHostName(), (*it)->getUsername()));
+    // }
+    // client->sendReply(ENDOF_WHOCHAN(client->getNickName(), chan->getName()));
 
-    //std::cout << "°" << clientList << "°" << std::endl;
     //std::cout << "(" << client->getNickName() << ")" << std::endl;
     /* on envoie les reponses au client */
-    client->sendReply(NO_TOPIC(client->getNickName(), chan->getName()));
-    client->sendReply(CLIENTLIST(clientList, client->getNickName(), chan->getName()));
-    client->sendReply(ENDOF_CLIENTLIST(client->getNickName(), chan->getName()));
-    client->sendReply(WELCOMECHAN_DLC(chan->getName()));
+    // client->sendMsg(WHOCHAN(client->getPrefix(), clientList, client->getNickName(), chan->getName()));
+    // client->sendMsg(ENDOF_CLIENTLIST(client->getPrefix(), client->getNickName(), chan->getName()));
     /* ajoute le nouveau client au channel */
-    chan->broadcast(JOIN_RPL(client->getNickName(), chan->getName()));
+    chan->broadcast(JOIN_RPL(client->getPrefix(), chan->getName()));
 }

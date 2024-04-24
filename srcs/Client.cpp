@@ -8,6 +8,11 @@ Client::Client( int fd ): _socketFd(fd), _state(NONE) {
     std::cout << "Client: <unamed>" << GREEN << " created" << RESET << std::endl;
 }
 
+Client::Client( int fd, std::string hname ): _socketFd(fd), _hostname(hname), _state(NONE) {
+    std::cout << "ù" << hname << "ù" << std::endl;
+    std::cout << "Client: <unamed>" << GREEN << " created" << RESET << std::endl;
+}
+
 Client::Client(std::string realname, std::string nickname, std::string username, int socketfd): _socketFd(socketfd), _realname(realname), _username(username), _nickname(nickname){
     std::cout << "Client: " << _nickname << GREEN << " created" << RESET << std::endl;
 }
@@ -25,6 +30,15 @@ Client &Client::operator=( const Client & ref)
     return *this;
 }
 
+std::string Client::getPrefix( void ) {
+    std::string res = this->_nickname;
+
+    res += (this->_username.empty() ? "":("!"+this->_username));
+    res += (this->_hostname.empty() ? "":("@"+this->_hostname));
+
+    return res;
+}
+
 std::string Client::getNickName(void){
     return this->_nickname;
 }
@@ -35,6 +49,10 @@ std::string Client::getUsername(void){
 
 std::string Client::getRealname(void){
     return this->_realname;
+}
+
+std::string Client::getHostName(void) {
+    return this->_hostname;
 }
 
 int Client::getSocketFd(void){
@@ -55,6 +73,10 @@ void Client::setUsername(std::string username){
 
 void Client::setRealname(std::string realname){
     this->_realname = realname;
+}
+
+void    Client::setHostname( std::string hostname ) {
+    this->_hostname = hostname;
 }
 
 void    Client::setState( int state ) {

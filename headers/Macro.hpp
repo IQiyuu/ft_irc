@@ -13,15 +13,17 @@
 #define MAX_CON 100
 
 #define WELCOME_RPL(nn) "001 " + nn + " :Welcome to the ft_irc, " + nn + "!"
-#define WELCOMECHAN_DLC(chan) "Enjoy chatting in " + chan + "."
-
 
 #define NO_TOPIC(nn, chan) "331 " + nn + " " + chan + " :no Topic is set."
 
-#define CLIENTLIST(clist, nn, chan) "353 " + nn + " = " + chan + " :" + clist
-#define ENDOF_CLIENTLIST(nn, chan) "366 " + nn + " " + chan  + " :End of /NAMES list."
+#define WHOCHAN(nn, chan, nn2, hn, uname) "352 " + nn + " " + chan + " ~" + uname + " ft_irc " + hn + " H :0 " + nn2
+#define ENDOF_WHOCHAN(nn, chan) "315 " + nn + " " + chan  + " :End of /WHO list."
 
-#define JOIN_RPL(nn, chan) ":" + nn + " JOIN " + chan
+
+#define CLIENTLIST(pref, clist, nn, chan) ":" + pref + " 353 " + nn + " = " + chan + " :" + clist
+#define ENDOF_CLIENTLIST(pref, nn, chan) ":" + pref + " 366 " + nn + " " + chan  + " :End of /NAMES list."
+
+#define JOIN_RPL(nn, chan) ":" + nn + " JOIN :" + chan
 #define PRIVMSG_RPL(nn, cible, msg) ":" + nn + " PRIVMSG " + cible + " " + msg
 #define CAPLS_RPL() "CAP * LS :multi_prefix"
 #define CAPEND_RPL() "CAP * ACK :End of CAP negotiation"
