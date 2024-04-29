@@ -12,7 +12,7 @@ class Channel {
         /* membres du channel */
         std::vector<Client *>   _members;
         /* ops du channel (genre les modos) */
-        //std::vector<Client *>   _ops;
+        std::vector<Client *>   _ops;
         /* peut etre des modes */
 
         Channel( void );
@@ -25,9 +25,13 @@ class Channel {
 
         /* ajoute un membre */
         void    addMember( Client * );
+
+         void    addModerator( Client * );
         /* retire un membre */
         /* si channel vide delete le channel (a verif) */
         void    removeMember( Client * );
+
+        void    removeModerator( Client * );
 
         /* envoie un message a tous les users */
         void    broadcast( std::string );
@@ -39,6 +43,7 @@ class Channel {
         std::string             getName( void );
         std::string             getTopic( void );
         std::vector<Client *>   getMembers( void );
+        std::vector<Client *>   getModerator( void );
 
 };
 

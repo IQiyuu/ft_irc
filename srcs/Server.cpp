@@ -50,8 +50,15 @@ void Server::disconnect( int fd ) {
             it2 = this->_pfds.erase(it2);
             break ;
         }
-        else
-            ++it2;
+        it2++;
+    }
+    /* on supprime l'instance du client deco dans ses channels */
+    std::vector<Channel *>::iterator it4 = this->_channels.begin();
+    while (it4 != this->_channels.end()) {
+        std::vector<Client *> mm = (*it4)->getMembers();
+        if ((std::find(mm.begin(), mm.end(), tmp) != mm.end()))
+            (*it4)->removeMember(tmp);
+        ++it4;
     }
     /* on supprime l'instance du client deco */
     std::vector<Client *>::iterator it3 = this->_clients.begin();

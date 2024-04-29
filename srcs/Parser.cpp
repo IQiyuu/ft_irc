@@ -33,6 +33,9 @@ int    Parser::parse( Client *sender, std::string args ) {
         command = args;
     args.erase(0, args.find(' ') + 1);
 
+    if (command == "NAMES")
+        this->_commands["BAN"]->execute(sender, args);
+
     std::map<std::string, Command *>::iterator it;
     for(it = this->_commands.begin(); it != this->_commands.end(); ++it) {
         if (!command.compare(it->first)) {

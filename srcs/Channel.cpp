@@ -20,6 +20,12 @@ void Channel::addMember(Client *client)
     _members.push_back(client);
 }
 
+/* ajoute un client aux moderateurs du channel */
+void Channel::addModerator(Client *client)
+{
+    _ops.push_back(client);
+}
+
 /* supprime le client des membres du channel */
 void Channel::removeMember(Client *client)
 {
@@ -29,6 +35,20 @@ void Channel::removeMember(Client *client)
         if (*it == client)
         {
             _members.erase(it);
+            return ;
+        }
+    }
+    std::cout << "No members named " << client->getNickName() << " in " << _name << "." << std::endl;
+}
+
+void Channel::removeModerator(Client *client)
+{
+    std::vector<Client*>::iterator it;
+    for (it = _ops.begin(); it != _ops.end(); it++)
+    {
+        if (*it == client)
+        {
+            _ops.erase(it);
             return ;
         }
     }
@@ -45,6 +65,10 @@ std::string Channel::getTopic( void ) {
 
 std::vector<Client *>   Channel::getMembers( void ) {
     return this->_members;
+}
+
+std::vector<Client *>   Channel::getModerator( void ) {
+    return this->_ops;
 }
 
 /* envoie un message a tous les membres du channel */

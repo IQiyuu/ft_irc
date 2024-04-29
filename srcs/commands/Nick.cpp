@@ -14,7 +14,7 @@ void Nick::execute(Client *client, std::string args)
     }
     // for (int i = 0; i <= (int)args.size(); i++)
     // {
-    //     if (!isalpha(args[i]) || !isalnum(args[i]))
+    //     if (!isalpha(args[i]) && !isalnum(args[i]))
     //     {
     //         std::cout << "Error: " << RED << + "`" << args[i] << "` incorrect character." << RESET << std::endl;
     //         return;
@@ -33,6 +33,7 @@ void Nick::execute(Client *client, std::string args)
         return ;
     }
     client->setNickName(args);
+    client->sendReply(WELCOME_RPL(client->getNickName()));
     /* faire un broadcast sur tous les channels presents pour dire qu'il a swap de nickname */
     this->_serv->sendToConnected(client, NICK_RPL(tmp, client->getNickName()));
     return;

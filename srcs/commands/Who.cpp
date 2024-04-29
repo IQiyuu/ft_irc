@@ -4,7 +4,6 @@ Who::Who( Server *serv ): Command(serv) { }
 Who::~Who( void ) { }
 
 void    Who::execute( Client *sender, std::string args ) {
-    (void)sender;
     /* si on envoie juste Who donner les infos sur TOUS les users */
     if (args.empty()) {
         std::cout << "WHO EVERYONE" << std::endl;
@@ -22,6 +21,7 @@ void    Who::execute( Client *sender, std::string args ) {
         std::vector<Client *> memb = chan->getMembers();
         std::vector<Client *>::iterator it;
         for (it = memb.begin(); it != memb.end(); ++it) {
+            //std::cout << WHOCHAN(sender->getNickName(), chan->getName(), (*it)->getNickName(), (*it)->getHostName(), (*it)->getUsername()) << std::endl;
             //std::cout << WHOCHAN(sender->getNickName(), chan->getName(), (*it)->getNickName(), (*it)->getHostName(), (*it)->getUsername()) << std::endl;
             sender->sendReply(WHOCHAN(sender->getNickName(), chan->getName(), (*it)->getNickName(), (*it)->getHostName(), (*it)->getUsername()));
         }
