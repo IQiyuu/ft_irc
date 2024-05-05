@@ -7,6 +7,8 @@ class Client {
     private:
         /* socket du client pour communiquer */
         int _socketFd;
+        /* request pending */
+        std::string _request;
         /* aucune idee du realname */
         std::string _realname;
         /* aucune idee du username */
@@ -42,6 +44,7 @@ class Client {
         int         getSocketFd(void);
         int         getState( void );
         std::string getPrefix( void );
+        std::string getRequest( void );
 
         /************************************/
         /*              SETTER              */
@@ -51,12 +54,14 @@ class Client {
         void    setRealname(std::string);
         void    setHostname( std::string );
         void    setState( int );
+        void    setRequest( std::string );
+        void    appendRequest( std::string );
 
         /************************************/
         /*              SENDERS             */
         /************************************/
         void    sendMsg( std::string );
-        void    sendReply( std::string msg );
+        void    sendReply( std::string );
 
         void    welcome( void );
 };

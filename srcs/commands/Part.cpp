@@ -19,7 +19,7 @@ void Part::execute( Client *sender, std::string args ) {
         std::cout << "Error: " << RED << "`" << args.substr(0, args.find(' ')) << "` not found" << RESET << std::endl;
         return ;
     }
-    args.erase(0, args.find(':'));
+    args.erase(0, args.find(':') + 1);
     chan->removeMember(sender);
     chan->broadcast(PART_RPL(sender->getNickName(), chan->getName(), args));
 }

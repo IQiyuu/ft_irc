@@ -63,6 +63,10 @@ int Client::getState( void ) {
     return this->_state;
 }
 
+std::string Client::getRequest( void ) {
+    return this->_request;
+}
+
 void Client::setNickName(std::string name){
     this->_nickname = name;
 }
@@ -81,6 +85,14 @@ void    Client::setHostname( std::string hostname ) {
 
 void    Client::setState( int state ) {
     this->_state = state;
+}
+
+void    Client::setRequest( std::string nRequest ) {
+    this->_request = nRequest;
+}
+
+void    Client::appendRequest( std::string msg ) {
+    this->_request.append(msg);
 }
 
 /* envoie un message au client (genre PRIVMSG)*/

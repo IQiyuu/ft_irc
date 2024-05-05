@@ -13,7 +13,12 @@ class Channel {
         std::vector<Client *>   _members;
         /* ops du channel (genre les modos) */
         std::vector<Client *>   _ops;
+
         /* peut etre des modes */
+        int                     _l;
+        std::string             _k;
+        bool                    _t;
+        bool                    _i;
 
         Channel( void );
         Channel( const Channel & );
