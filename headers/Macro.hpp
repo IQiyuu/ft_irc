@@ -33,9 +33,36 @@
 #define PART_RPL(cli, chan, rea) ":" + cli + " PART " + chan + " " + rea + "."
 #define QUIT_RPL(nn, rea) ":" + nn + " QUIT " + rea
 #define NICK_RPL(ann, nn) ":" + ann + " NICK " + nn
-#define PING_RPL(nn, arg) "PONG " + arg
-#define INVITE_RPL(sender, target, chan) ":" + sender + " INVITE " + target + " :" + chan
+#define PING_RPL(cli, arg) ":" + cli + " PONG " + arg
+#define INVITE_RPL(cli, tar, chan) ":" + cli + " INVITE " + tar + " " + chan
+#define INVITING_RPL(cli, nn, tar, chan) ":" + cli + "341 " + nn + " " + tar + " " + chan
 #define MODE_RPL(nn, mode) "MODE " + nn + " :" + mode
+
+
+/* USER */
+#define ALREADYREGISTERED_ERR(cli) "462 " + cli + " :You may not reregister."
+
+/* PASS */
+#define PASSMISMATCH_ERR(cli) "464 " + cli + " :Password incorrect."
+
+/* OVERALL */
+#define NEEDMOREPARAMS_ERR(cli, comm) "461 " + cli + " " + comm + " :Not enough parameters"
+#define UNKNOWNCOMMAND_ERR(cli, comm) "421 " + cli + " " + comm + " :Unknow command"
+
+/* JOIN */
+#define INVITEONLYCHAN_ERR(cli, chan) "473 " + cli + " " + chan + " :Cannot join channel (+i)"
+#define BADKEYCHANNEL_ERR(cli, chan) "475 " + cli + " " + chan + " :Cannot join channel (+k)"
+
+/* PART */
+#define NOSUCHCHANNEL_ERR(cli, chan) "403 " + cli + " " + chan + " :No such channel"
+#define NOTONCHANNEL_ERR(cli, chan) "442 " + cli + " " + chan + " :You're not on that channel"
+
+/* PRIVMSG */
+#define NOSUCHNICK_ERR(cli, tar) "401 " + cli + " " + tar + " : No such nick/channel"
+#define NOTEXTTOSEND_ERR(cli) "412 " + cli + " :No text to send"
+
+/* NICK */
+#define NICKNAMEINUSE_ERR(cli, nn) "433 " + cli + " " + nn + " :Nickname is already in use"
 
 #endif
 

@@ -7,6 +7,7 @@ Nick::~Nick( void ) { }
 // ajouter un check pour voir si le pseudo exite deja et voir si c'est pas un nom de commande
 void Nick::execute(Client *client, std::string args)
 {
+
     if (args.size()  > 12)
     {
         std::cout << "Error: " << RED << "nickname too long" << RESET << std::endl;
@@ -22,20 +23,16 @@ void Nick::execute(Client *client, std::string args)
     // }
     std::string tmp = client->getPrefix();
     if (this->_serv->getClient(args) != NULL) {
-        std::cout << "Error: " << RED << "`" << args << "` already connected" << RESET << std::endl;
-        if (client->getUsername().empty()) {
-            std::string nname = "client";
-            std::stringstream ss;
-            ss << std::rand()%100;
-            nname += ss.str();
-            client->setNickName(nname);
-        }
+        std::cout << "Error: " << RED << "`" << args << "` nickname already used" << RESET << std::endl;
+        client->sendReply(NICKNAMEINUSE_ERR(client->getPrefix(), args));
+        client->setNickName(args);
+        client->sendMsg(NICK_RPL(tmp, client->getNickName()));
         return ;
     }
-    //std::cout << "nickname modified: " << tmp << " - " << args << std::endl;
     client->setNickName(args);
     if (client->getState() != LOGED)
         return ;
+    //std::cout << "nickname modified: " << tmp << " - " << args << std::endl;
     client->sendMsg(NICK_RPL(tmp, client->getNickName()));
     //client->welcome();
     /* faire un broadcast sur tous les channels presents pour dire qu'il a swap de nickname */

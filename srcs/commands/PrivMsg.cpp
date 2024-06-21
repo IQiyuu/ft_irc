@@ -16,11 +16,13 @@ void PrivMsg::execute( Client *client, std::string args ) {
     }
     else {
         std::cout << "Error: " << RED << "empty target" << RESET << std::endl;
+        client->sendReply(NOSUCHNICK_ERR(client->getPrefix(), ""));
         return ;
     }
     /* faire un truc si le message est vide */
     if (args.empty()) {
         std::cout << "Error: " << RED << "empty message" << RESET << std::endl;
+        client->sendReply(NOTEXTTOSEND_ERR(client->getPrefix()));
         return ;
     }
     /* on enleve les : */
@@ -31,8 +33,10 @@ void PrivMsg::execute( Client *client, std::string args ) {
     if (receiverNname.at(0) == '#') {
         Channel *chan = this->_serv->getChannel(receiverNname);
         /* faire un truc si le chan n'existe pas */
-        if (chan == NULL)
+        if (chan == NULL) {
+            client->sendReply(NOSUCHNICK_ERR(client->getPrefix(), chan->getName()));
             return ;
+        }
         /* si le client est dans le chan broadcast */
         std::vector<Client *> memb = chan->getMembers();
         std::vector<Client *>::iterator it = memb.begin();
@@ -51,7 +55,8 @@ void PrivMsg::execute( Client *client, std::string args ) {
     Client  *cible = this->_serv->getClient(receiverNname);
     /* faire un truc si la cible n'existe pas */
     if (cible == NULL) {
-        std::cout << "Error: " << RED << "`" << receiverNname << "`Unknow client" << RESET << std::endl;
+        std::cout << "Error: " << RED << "`" << receiverNname << "` Unknow client" << RESET << std::endl;
+        client->sendReply(NOSUCHNICK_ERR(client->getPrefix(), receiverNname));
         return ;
     }
     cible->sendMsg(PRIVMSG_RPL(client->getNickName(), receiverNname, args));

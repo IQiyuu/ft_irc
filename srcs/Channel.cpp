@@ -55,6 +55,16 @@ void Channel::removeModerator(Client *client)
     std::cout << "No members named " << client->getNickName() << " in " << _name << "." << std::endl;
 }
 
+/* renvoie 1 si client est connected 0 sinon */
+int Channel::isConnected(Client *client) {
+    std::vector<Client*>::iterator it;
+
+    for (it = _members.begin(); it != _members.end(); it++)
+        if (*it == client)
+            return 1;
+    return 0;
+}
+
 std::string Channel::getName( void ) {
     return this->_name;
 }
@@ -69,6 +79,14 @@ std::vector<Client *>   Channel::getMembers( void ) {
 
 std::vector<Client *>   Channel::getModerator( void ) {
     return this->_ops;
+}
+
+int                     Channel::getInvite( void ) {
+    return this->_i;
+}
+
+std::string             Channel::getKey( void ) {
+    return this->_k;
 }
 
 /* envoie un message a tous les membres du channel */

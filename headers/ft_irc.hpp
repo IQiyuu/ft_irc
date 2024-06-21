@@ -9,9 +9,9 @@ enum ServStates {
 
 enum ClientStates {
     NONE,
+    BADPASS,
     AUTH,
-    LOGED,
-    AWAY
+    LOGED
 };
 
 class   Client;

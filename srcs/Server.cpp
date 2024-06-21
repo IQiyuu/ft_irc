@@ -53,12 +53,24 @@ void Server::disconnect( int fd ) {
         it2++;
     }
     /* on supprime l'instance du client deco dans ses channels */
+    std::vector<Channel *>  tmp_delete;
+    int a;
     std::vector<Channel *>::iterator it4 = this->_channels.begin();
     while (it4 != this->_channels.end()) {
+        a = 1;
         std::vector<Client *> mm = (*it4)->getMembers();
-        if ((std::find(mm.begin(), mm.end(), tmp) != mm.end()))
+        if ((std::find(mm.begin(), mm.end(), tmp) != mm.end())) {
             (*it4)->removeMember(tmp);
-        ++it4;
+            /* on supprime les instances de channel si il n y a plus personne dessus */
+            if ((*it4)->getMembers().size() == 0) {
+                Channel *tmp_chan = *it4;
+                this->_channels.erase(it4);
+                delete tmp_chan;
+                a = 0;
+            }
+        }
+        if (a)
+            ++it4;
     }
     /* on supprime l'instance du client deco */
     std::vector<Client *>::iterator it3 = this->_clients.begin();
@@ -158,6 +170,19 @@ Channel *Server::createChannel( std::string name ) {
     chan = new Channel(name);
     this->_channels.push_back(chan);
     return (chan);
+}
+
+/* remove un channel de la liste des channels du server */
+void    Server::removeChannel( Channel *chan ) {
+    std::cout << "Server: " << YELLOW << "channel `" << chan->getName() << "` deleting not enough members." << RESET << std::endl;
+    std::vector<Channel *>::iterator it = this->_channels.begin();
+    while (it != this->_channels.end()) {
+        if (chan == *it) {
+            this->_channels.erase(it);
+            delete chan;
+            break ;
+        }
+    }
 }
 
 /* lance le server */

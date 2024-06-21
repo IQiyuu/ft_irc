@@ -125,3 +125,6 @@ std::ostream &operator<<(std::ostream &os, Client &ref ) {
     os << "rn: -" << ref.getRealname() << "-" << std::endl;
     return os;
 }
+// Server respond: dgoubin!dgoubin@localhost INVITE dgoubin_ #general
+
+// Server respond: :ft_irc 341 dgoubin!dgoubin@localhost dgoubin_ #general

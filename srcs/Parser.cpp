@@ -54,10 +54,14 @@ int    Parser::parse( Client *sender, std::string args ) {
             }
             std::cout << "Client Sent: " << DARK_PINK << command << LIGHT_PINK << " " << params << RESET << std::endl;
             it->second->execute(sender, params);
-            if (!str.empty())
-                parse(sender, str);
             if (!command.compare("QUIT"))
                 return 1;
+            if (sender->getState() == BADPASS) {
+                sender->setState(NONE);
+                return 0;
+            }
+            if (!str.empty())
+                parse(sender, str);
             return 0;
         }
     }

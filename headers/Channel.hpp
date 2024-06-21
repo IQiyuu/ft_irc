@@ -38,6 +38,9 @@ class Channel {
 
         void    removeModerator( Client * );
 
+        /* verifie si le client est connecte au channel */
+        int     isConnected( Client * );
+
         /* envoie un message a tous les users */
         void    broadcast( std::string );
         /* pareil sauf pour le Client */
@@ -49,6 +52,9 @@ class Channel {
         std::string             getTopic( void );
         std::vector<Client *>   getMembers( void );
         std::vector<Client *>   getModerator( void );
+
+        int                     getInvite( void );
+        std::string             getKey( void );
 
 };
 

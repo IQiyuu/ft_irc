@@ -63,6 +63,8 @@ class Server {
         void    newChannel(std::string);
         /* creer un nouveau channel et le retourne */
         Channel *createChannel( std::string );
+        /* supprime un channel */
+        void    removeChannel( Channel * );
 
         /* parse la requete du client */
         void    parse( void );

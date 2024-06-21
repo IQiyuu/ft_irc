@@ -18,7 +18,8 @@ void Invite::execute( Client *client, std::string args ) {
     std::string uname = args.substr(0, args.find(' '));
     if ((target = this->_serv->getClient(uname)) != NULL) {
         args.erase(0, args.find(' ') + 1);
-        target->sendMsg(INVITE_RPL(client->getNickName(), uname, args));
+        target->sendMsg(INVITE_RPL(client->getPrefix(), uname, args));
+        client->sendMsg(INVITING_RPL(client->getPrefix(), client->getNickName(), target->getNickName(), args));
         return ;    
     }
     std::cout << "Error: " << RED << "`" << uname << "` Client not found" << RESET << std::endl;

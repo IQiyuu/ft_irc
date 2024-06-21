@@ -9,11 +9,30 @@ void Join::execute(Client *client, std::string args)
     Channel *chan;
 
     /* faire un truc si args est vide */
-    if (args.empty())
+    if (args.empty()) {
+        std::cout << "Error: " << RED << "empty channel." << RESET << std::endl;
+        client->sendReply(NEEDMOREPARAMS_ERR(client->getPrefix(), "JOIN"));
         return ;
+    }
     /* creer le channel si il n'existe pas */
     if ((chan = this->_serv->getChannel(args)) == NULL)  {
         chan = this->_serv->createChannel(args);
+    }
+    else if (chan->isConnected(client)){
+        return ;
+    }
+    /* si le channel est en invite only verifier que le client est invite */
+    else if (chan->getInvite()) {
+        /* si le channel a une key verfier que le client a la bonne */
+        if (!chan->getKey().empty()) {
+            if (args.find(' ') == std::string::npos) {
+                client->sendReply(BADKEYCHANNEL_ERR(client->getPrefix(), chan->getName()));
+                return ;
+            }
+            std::string key = args.substr(args.find(' ') + 1, args.size());
+            if (key.compare(chan->getKey()))
+                client->sendReply(BADKEYCHANNEL_ERR(client->getPrefix(), chan->getName()));
+        }
     }
     chan->addMember(client);
     chan->addModerator(client);
