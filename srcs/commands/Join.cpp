@@ -12,8 +12,9 @@ void Join::execute(Client *client, std::string args)
     if (args.empty())
         return ;
     /* creer le channel si il n'existe pas */
-    if ((chan = _serv->getChannel(args)) == NULL) 
-        chan = _serv->createChannel(args);
+    if ((chan = this->_serv->getChannel(args)) == NULL)  {
+        chan = this->_serv->createChannel(args);
+    }
     chan->addMember(client);
     chan->addModerator(client);
     std::string clientList;
@@ -27,8 +28,8 @@ void Join::execute(Client *client, std::string args)
         clientList.append((*it)->getNickName() + " ");
     }
     chan->broadcast(JOIN_RPL(client->getPrefix(), chan->getName()));
-    client->sendReply(CLIENTLIST(clientList, client->getNickName(), chan->getName()));
-    client->sendReply(ENDOF_CLIENTLIST(client->getNickName(), chan->getName()));
+    client->sendReply(CLIENTLIST(clientList, client->getPrefix(), chan->getName()));
+    client->sendReply(ENDOF_CLIENTLIST(client->getPrefix(), chan->getName()));
 
     std::cout << "(" << chan->getName() << ")" << std::endl;
     

@@ -231,12 +231,11 @@ int Server::boucle( void ) {
                     char buf[BUF_SIZE];
                     bzero(buf, BUF_SIZE);
                     int byteRec = recv((*it).fd, buf, sizeof(buf), 0);
-                    /* si la requete a 0b on deco */
+                    /* si la requete a 0 on deco */
                     if (byteRec <= 0) {
                         disconnect(it->fd);
                         break ;
                     }
-                    std::cout << "=Server received: " << buf << "=" << std::endl;
                     /* execute les commandes */
                     if (this->_parser->parse(getClient(it->fd), buf))
                         break ;

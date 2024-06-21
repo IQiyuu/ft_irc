@@ -98,17 +98,23 @@ void    Client::appendRequest( std::string msg ) {
 /* envoie un message au client (genre PRIVMSG)*/
 void    Client::sendMsg( std::string msg ) {
     msg += "\r\n";
+    std::cout << "Server respond: " << PINK << msg << RESET << std::endl;
     send(this->_socketFd, msg.data(), msg.size(), 0);
 }
 
 /* sendReply = reponse au sender (genre JOIN)*/
 void    Client::sendReply( std::string msg ) {
     msg = ":ft_irc " + msg + "\r\n";
+    std::cout << "Server respond: " << PINK << msg << RESET << std::endl;
     send(this->_socketFd, msg.data(), msg.size(), 0);
 }
 
 void    Client::welcome( void ) {
-    sendReply(WELCOME_RPL(this->_nickname));
+    if (this->_state == LOGED)
+        return ;
+    std::string a = "dgoubin!@localhost";
+    sendMsg(NICK_RPL(a, this->_nickname));
+    sendMsg(WELCOME_RPL(this->_nickname, this->getPrefix()));
     this->_state = LOGED;
 }
 

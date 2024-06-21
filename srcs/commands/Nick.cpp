@@ -20,7 +20,7 @@ void Nick::execute(Client *client, std::string args)
     //         return;
     //     }
     // }
-    std::string tmp = client->getNickName();
+    std::string tmp = client->getPrefix();
     if (this->_serv->getClient(args) != NULL) {
         std::cout << "Error: " << RED << "`" << args << "` already connected" << RESET << std::endl;
         if (client->getUsername().empty()) {
@@ -32,8 +32,12 @@ void Nick::execute(Client *client, std::string args)
         }
         return ;
     }
+    //std::cout << "nickname modified: " << tmp << " - " << args << std::endl;
     client->setNickName(args);
-    client->sendReply(WELCOME_RPL(client->getNickName()));
+    if (client->getState() != LOGED)
+        return ;
+    client->sendMsg(NICK_RPL(tmp, client->getNickName()));
+    //client->welcome();
     /* faire un broadcast sur tous les channels presents pour dire qu'il a swap de nickname */
     this->_serv->sendToConnected(client, NICK_RPL(tmp, client->getNickName()));
     return;

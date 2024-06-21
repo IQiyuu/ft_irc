@@ -11,15 +11,16 @@ void Part::execute( Client *sender, std::string args ) {
         std::cout << "Error: " << RED << "PART need channel" << RESET << std::endl;
         return ;
     }
-    if (args.find(' ') == std::string::npos || args.find(':') == std::string::npos) {
-        std::cout << "Error: no reason" << std::endl;
-        return ;
-    }
-    if ((chan = this->_serv->getChannel(args.substr(0, args.find(':')))) == NULL) {
+    if ((chan = this->_serv->getChannel(args.substr(0, args.find(' ') == std::string::npos ? args.size():args.find(' ')))) == NULL) {
         std::cout << "Error: " << RED << "`" << args.substr(0, args.find(' ')) << "` not found" << RESET << std::endl;
         return ;
     }
-    args.erase(0, args.find(':') + 1);
+    if (args.find(' ') == std::string::npos || args.find(':') == std::string::npos) {
+        chan->broadcast(PART_RPL(sender->getPrefix(), chan->getName(), ""));
+        chan->removeMember(sender);
+        return ;
+    }
+    args.erase(0, args.find(':'));
+    chan->broadcast(PART_RPL(sender->getPrefix(), chan->getName(), args));
     chan->removeMember(sender);
-    chan->broadcast(PART_RPL(sender->getNickName(), chan->getName(), args));
 }

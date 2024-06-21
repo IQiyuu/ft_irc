@@ -9,7 +9,7 @@ enum ServStates {
 
 enum ClientStates {
     NONE,
-    AUTH,   
+    AUTH,
     LOGED,
     AWAY
 };
