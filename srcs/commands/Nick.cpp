@@ -21,17 +21,24 @@ void Nick::execute(Client *client, std::string args)
     //         return;
     //     }
     // }
-    std::string tmp = client->getPrefix();
     if (this->_serv->getClient(args) != NULL) {
-        std::cout << "Error: " << RED << "`" << args << "` nickname already used" << RESET << std::endl;
-        client->sendReply(NICKNAMEINUSE_ERR(client->getPrefix(), args));
         client->setNickName(args);
+        std::string tmp = client->getPrefix();
+        std::cout << "Error: " << RED << "`" << args << "` nickname already used" << RESET << std::endl;
+        client->sendReply(NICKNAMEINUSE_ERR(client->getNickName(), args));
         client->sendMsg(NICK_RPL(tmp, client->getNickName()));
         return ;
     }
     client->setNickName(args);
-    if (client->getState() != LOGED)
-        return ;
+    std::string tmp = client->getPrefix();
+    if (client->getState() != LOGED) {
+        if (client->getState() == REGISTERED) {
+            client->welcome();
+        }
+        if (client->getState() == AUTH) {
+            client->setState(REGISTERED);
+        }
+    }
     //std::cout << "nickname modified: " << tmp << " - " << args << std::endl;
     client->sendMsg(NICK_RPL(tmp, client->getNickName()));
     //client->welcome();

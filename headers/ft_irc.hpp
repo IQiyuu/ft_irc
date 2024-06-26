@@ -11,6 +11,7 @@ enum ClientStates {
     NONE,
     BADPASS,
     AUTH,
+    REGISTERED,
     LOGED
 };
 

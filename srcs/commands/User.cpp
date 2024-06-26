@@ -27,5 +27,9 @@ void User::execute( Client *sender, std::string args ) {
     realname = args.substr(0, args.size());
     sender->setUsername(uname);
     sender->setRealname(realname);
-    sender->welcome();
+    if (sender->getState() == AUTH)
+        sender->setState(REGISTERED);
+    else if (sender->getState() == REGISTERED) {
+        sender->welcome();
+    }
 }

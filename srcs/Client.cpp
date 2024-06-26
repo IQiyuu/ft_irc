@@ -13,7 +13,7 @@ Client::Client( int fd, std::string hname ): _socketFd(fd), _hostname(hname), _s
     std::cout << "Client: <unamed>" << GREEN << " created" << RESET << std::endl;
 }
 
-Client::Client(std::string realname, std::string nickname, std::string username, int socketfd): _socketFd(socketfd), _realname(realname), _username(username), _nickname(nickname){
+Client::Client(std::string realname, std::string nickname, std::string username, int socketfd): _socketFd(socketfd), _realname(realname), _username(username), _nickname(nickname), _state(NONE){
     std::cout << "Client: " << _nickname << GREEN << " created" << RESET << std::endl;
 }
 
@@ -112,9 +112,8 @@ void    Client::sendReply( std::string msg ) {
 void    Client::welcome( void ) {
     if (this->_state == LOGED)
         return ;
-    std::string a = "dgoubin!@localhost";
-    sendMsg(NICK_RPL(a, this->_nickname));
-    sendMsg(WELCOME_RPL(this->_nickname, this->getPrefix()));
+    sendMsg(NICK_RPL(this->getPrefix(), this->_nickname));
+    sendReply(WELCOME_RPL(this->_nickname, this->getPrefix()));
     this->_state = LOGED;
 }
 
