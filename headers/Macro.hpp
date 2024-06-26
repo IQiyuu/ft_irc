@@ -48,14 +48,13 @@
 /* OVERALL */
 #define NEEDMOREPARAMS_ERR(cli, comm) "461 " + cli + " " + comm + " :Not enough parameters"
 #define UNKNOWNCOMMAND_ERR(cli, comm) "421 " + cli + " " + comm + " :Unknow command"
+#define NOSUCHCHANNEL_ERR(cli, chan) "403 " + cli + " " + chan + " :No such channel"
+#define NOTONCHANNEL_ERR(cli, chan) "442 " + cli + " " + chan + " :You're not on that channel"
 
 /* JOIN */
 #define INVITEONLYCHAN_ERR(cli, chan) "473 " + cli + " " + chan + " :Cannot join channel (+i)"
 #define BADKEYCHANNEL_ERR(cli, chan) "475 " + cli + " " + chan + " :Cannot join channel (+k)"
-
-/* PART */
-#define NOSUCHCHANNEL_ERR(cli, chan) "403 " + cli + " " + chan + " :No such channel"
-#define NOTONCHANNEL_ERR(cli, chan) "442 " + cli + " " + chan + " :You're not on that channel"
+#define CHANFULL_ERR(cli, chan)  "471 " + cli + " " + chan + " :Cannot join channel (+l)"
 
 /* PRIVMSG */
 #define NOSUCHNICK_ERR(cli, tar) "401 " + cli + " " + tar + " : No such nick/channel"
@@ -63,6 +62,14 @@
 
 /* NICK */
 #define NICKNAMEINUSE_ERR(cli, nn) "433 " + cli + " " + nn + " :Nickname is already in use"
+
+/* TOPIC */
+#define CLEARING_TOPIC(chan) "Clearing the topic on " + chan
+#define SETTING_TOPIC(cli, chan, topic) "332 " + cli + " " + chan + " " + topic
+#define CHECKING_TOPIC(chan) "Checking the topic for \"" + chan + "\""
+
+/* MODE */
+#define CHANOPRIVMSG(cli, chan) "482 " + cli + " " + chan + " :You're not channel operator"
 
 #endif
 

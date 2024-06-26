@@ -16,13 +16,24 @@ void Join::execute(Client *client, std::string args)
     }
     /* creer le channel si il n'existe pas */
     if ((chan = this->_serv->getChannel(args)) == NULL)  {
+        std::cout << "channel created." << std::endl;
         chan = this->_serv->createChannel(args);
+        chan->addModerator(client);
     }
     else if (chan->isConnected(client)){
+        /* erreur deja connected */
+        std::cout << "ALREADY CONNECTED" << std::endl;
+        return ;
+    }
+    else if (chan->getLimit() > 0 && chan->getLimit() <= (int)chan->getMembers().size())
+    {
+        std::cout << "LIMIT " << chan->getLimit() << " " << chan->getMembers().size() << std::endl;
+        client->sendReply(CHANFULL_ERR(client->getPrefix(), chan->getName()));
         return ;
     }
     /* si le channel est en invite only verifier que le client est invite */
     else if (chan->getInvite()) {
+        /* verifier le mode +l et si il y a encore de la place */
         /* si le channel a une key verfier que le client a la bonne */
         if (!chan->getKey().empty()) {
             if (args.find(' ') == std::string::npos) {
@@ -35,18 +46,25 @@ void Join::execute(Client *client, std::string args)
         }
     }
     chan->addMember(client);
-    chan->addModerator(client);
     std::string clientList;
 
     std::vector<Client *>::iterator it;
+    std::vector<Client *>           ops = chan->getModerator();
+    for (it = ops.begin(); it != ops.end(); ++it) {
+        //std::cout << WHOCHAN(sender->getNickName(), chan->getName(), (*it)->getNickName(), (*it)->getHostName(), (*it)->getUsername()) << std::endl;
+        //client->sendReply(CLIENTLIST(client->getNickName(), chan->getName(), (*it)->getNickName(), (*it)->getHostName()));
+        clientList.append("@" + (*it)->getNickName() + " ");
+    }
+
     std::vector<Client *>           memb = chan->getMembers();
     /* creer le string de la liste des users */
     for (it = memb.begin(); it != memb.end(); ++it) {
         //std::cout << WHOCHAN(sender->getNickName(), chan->getName(), (*it)->getNickName(), (*it)->getHostName(), (*it)->getUsername()) << std::endl;
         //client->sendReply(CLIENTLIST(client->getNickName(), chan->getName(), (*it)->getNickName(), (*it)->getHostName()));
-        clientList.append((*it)->getNickName() + " ");
+        if (chan->isOp(*it))
+            clientList.append((*it)->getNickName() + " ");
     }
-    chan->broadcast(JOIN_RPL(client->getPrefix(), chan->getName()));
+    chan->broadcast2(JOIN_RPL(client->getPrefix(), chan->getName()));
     client->sendReply(CLIENTLIST(clientList, client->getPrefix(), chan->getName()));
     client->sendReply(ENDOF_CLIENTLIST(client->getPrefix(), chan->getName()));
 

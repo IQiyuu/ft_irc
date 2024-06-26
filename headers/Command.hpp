@@ -133,4 +133,12 @@ class Who: public Command {
         void execute( Client *, std::string );
 };
 
+/* permet de modifier le topic d'un channel ou de le visualiser */
+class Topic: public Command {
+    public:
+        Topic( Server * );
+        ~Topic( void );
+        void execute( Client *, std::string );
+};
+
 #endif

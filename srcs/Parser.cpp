@@ -13,6 +13,7 @@ Parser::Parser( Server *serv ) {
     _commands["PING"] = new Ping(serv);
     _commands["QUIT"] = new Quit(serv);
     _commands["PRIVMSG"] = new PrivMsg(serv);
+    _commands["TOPIC"] = new Topic(serv);
     _commands["USER"] = new User(serv);
     _commands["WHO"] = new Who(serv);
 }

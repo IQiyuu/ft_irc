@@ -26,6 +26,16 @@ void Channel::addModerator(Client *client)
     _ops.push_back(client);
 }
 
+/* retourne 1 si client est op 0 sinon */
+int Channel::isOp( Client *client ) {
+    std::vector<Client *>::iterator it;
+    std::vector<Client *>           op = this->_ops;
+    for (it = op.begin(); it != op.end(); ++it) 
+        if (*it == client)
+            return 1;
+    return 0;
+}
+
 /* supprime le client des membres du channel */
 void Channel::removeMember(Client *client)
 {
@@ -81,7 +91,7 @@ std::vector<Client *>   Channel::getModerator( void ) {
     return this->_ops;
 }
 
-int                     Channel::getInvite( void ) {
+bool                    Channel::getInvite( void ) {
     return this->_i;
 }
 
@@ -89,8 +99,36 @@ std::string             Channel::getKey( void ) {
     return this->_k;
 }
 
+int                     Channel::getLimit( void ) {
+    return this->_l;
+}
+
+void    Channel::setK( std::string key ) {
+    this->_k = key;
+}
+
+void    Channel::setL( int limit ) {
+    this->_l = limit;
+}
+
+void    Channel::setT( bool t ) {
+    this->_t = t;
+}
+
+void    Channel::setI( bool i ) {
+    this->_i = i;
+}
+
 /* envoie un message a tous les membres du channel */
 void    Channel::broadcast( std::string msg ) {
+    std::vector<Client *>::iterator it;
+
+    for (it = this->_members.begin(); it != this->_members.end(); ++it) {
+        (*it)->sendReply(msg);
+    }
+}
+
+void    Channel::broadcast2( std::string msg ) {
     std::vector<Client *>::iterator it;
 
     for (it = this->_members.begin(); it != this->_members.end(); ++it) {

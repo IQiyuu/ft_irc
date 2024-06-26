@@ -19,6 +19,7 @@ F =	main\
 	commands/PrivMsg\
 	commands/User\
 	commands/Quit\
+	commands/Topic\
 	commands/Who
 
 S = $(foreach f, $(F), srcs/$(f).cpp)

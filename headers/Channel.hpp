@@ -41,10 +41,15 @@ class Channel {
         /* verifie si le client est connecte au channel */
         int     isConnected( Client * );
 
+        /* verifie si le client donne est operator */
+        int     isOp( Client * );
+
         /* envoie un message a tous les users */
         void    broadcast( std::string );
         /* pareil sauf pour le Client */
         void    broadcast( std::string, Client * );
+
+        void    broadcast2( std::string );
 
 
         /* getters */
@@ -52,8 +57,14 @@ class Channel {
         std::string             getTopic( void );
         std::vector<Client *>   getMembers( void );
         std::vector<Client *>   getModerator( void );
+        int                     getLimit( void );
 
-        int                     getInvite( void );
+        void                    setI( bool );
+        void                    setT( bool );
+        void                    setL( int );
+        void                    setK( std::string );
+
+        bool                     getInvite( void );
         std::string             getKey( void );
 
 };
