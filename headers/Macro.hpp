@@ -37,8 +37,7 @@
 #define INVITE_RPL(cli, tar, chan) ":" + cli + " INVITE " + tar + " " + chan
 #define INVITING_RPL(cli, nn, tar, chan) ":" + cli + "341 " + nn + " " + tar + " " + chan
 #define MODE_RPL(nn, mode) "MODE " + nn + " :" + mode
-
-
+#define TOPIC_RPL(cli, chan, topic) "332 " + cli + " " + chan + " :" + topic
 /* USER */
 #define ALREADYREGISTERED_ERR(cli) "462 " + cli + " :You may not reregister."
 
@@ -50,6 +49,7 @@
 #define UNKNOWNCOMMAND_ERR(cli, comm) "421 " + cli + " " + comm + " :Unknow command"
 #define NOSUCHCHANNEL_ERR(cli, chan) "403 " + cli + " " + chan + " :No such channel"
 #define NOTONCHANNEL_ERR(cli, chan) "442 " + cli + " " + chan + " :You're not on that channel"
+#define CHANOPRIVMSG(cli, chan) "482 " + cli + " " + chan + " :You're not channel operator"
 
 /* JOIN */
 #define INVITEONLYCHAN_ERR(cli, chan) "473 " + cli + " " + chan + " :Cannot join channel (+i)"
@@ -65,11 +65,6 @@
 
 /* TOPIC */
 #define CLEARING_TOPIC(chan) "Clearing the topic on " + chan
-#define SETTING_TOPIC(cli, chan, topic) "332 " + cli + " " + chan + " " + topic
-#define CHECKING_TOPIC(chan) "Checking the topic for \"" + chan + "\""
-
-/* MODE */
-#define CHANOPRIVMSG(cli, chan) "482 " + cli + " " + chan + " :You're not channel operator"
 
 #endif
 

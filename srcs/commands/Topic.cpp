@@ -24,14 +24,15 @@ void Topic::execute(Client *sender, std::string args)
     //retourne une erreur si le sender n'est pas  dans le channel  
     if (!chan->isConnected(sender))
         sender->sendReply(NOTONCHANNEL_ERR(sender->getPrefix(), chan->getName()));
-    std::string topic = args.substr(args.find(' ') + 1, args.size());
-    std::string ch = args.substr(0, args.find(' '));
-    if (topic.size() == 0)
-    {
-        chan->broadcast(CLEARING_TOPIC(ch));
-        return;
+    if (chan->getT() && !chan->isOp(sender)) {
+        sender->sendReply(CHANOPRIVMSG(sender->getPrefix(), chan->getName()));
+        return ;
     }
-    chan->broadcast(SETTING_TOPIC(sender->getPrefix(), chan->getName(), topic));
+    std::string topic = args.substr(args.find(':') == std::string::npos ? 0:args.find(':') + 1, args.size());
+    //std::string ch = args.substr(0, args.find(' '));
+    if (!topic.empty())
+        chan->setTopic(topic);
+    chan->broadcast(TOPIC_RPL(sender->getPrefix(), chan->getName(), chan->getTopic()));
 }
 
 // je dois regarder si le sender est dans le channel sinon rep l erreur 442 

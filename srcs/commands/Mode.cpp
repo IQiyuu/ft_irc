@@ -38,9 +38,9 @@ void Mode::execute( Client *sender, std::string args ) {
             case 'i':
                 std::cout << "MODE +i" << std::endl;
                 if (args.at(0) == '+')
-                    chan->setI(false);
-                else
                     chan->setI(true);
+                else
+                    chan->setI(false);
                 chan->broadcast(MODE_RPL(chan->getName(), args));
                 break ;
             case 'k':
@@ -49,16 +49,14 @@ void Mode::execute( Client *sender, std::string args ) {
                     chan->setK(args.substr(args.find(" ") == std::string::npos ? args.size():args.find(" ")+1, args.size()));
                 else
                     chan->setK("");
-                std::cout << "BROADCAST BEFORE" << std::endl;
                 chan->broadcast(MODE_RPL(chan->getName(), args));
-                std::cout << "BROADCAST PASSED" << std::endl;
                 break ;
             case 't':
                 std::cout << "MODE +t" << std::endl;
                 if (args.at(0) == '+')
-                    chan->setT(false);
-                else
                     chan->setT(true);
+                else
+                    chan->setT(false);
                 chan->broadcast(MODE_RPL(chan->getName(), args));
                 break ;
             case 'l':

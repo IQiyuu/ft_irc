@@ -64,8 +64,11 @@ class Channel {
         void                    setL( int );
         void                    setK( std::string );
 
+        void                    setTopic( std::string );
+
         bool                     getInvite( void );
         std::string             getKey( void );
+        bool                    getT( void );
 
 };
 

@@ -99,6 +99,10 @@ std::string             Channel::getKey( void ) {
     return this->_k;
 }
 
+bool                    Channel::getT( void ) {
+    return this->_t;
+}
+
 int                     Channel::getLimit( void ) {
     return this->_l;
 }
@@ -117,6 +121,10 @@ void    Channel::setT( bool t ) {
 
 void    Channel::setI( bool i ) {
     this->_i = i;
+}
+
+void    Channel::setTopic( std::string nTopic ) {
+    this->_topic = nTopic;
 }
 
 /* envoie un message a tous les membres du channel */
