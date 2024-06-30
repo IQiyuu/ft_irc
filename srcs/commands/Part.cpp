@@ -24,9 +24,9 @@ void Part::execute( Client *sender, std::string args ) {
     }
 
     args.erase(0, args.find(':') == std::string::npos ? args.find(":"):args.size());
-    chan->broadcast(PART_RPL(sender->getPrefix(), chan->getName(), args));
+    chan->broadcast2(PART_RPL(sender->getPrefix(), chan->getName(), args));
     chan->removeMember(sender);
-    std::cout << "nb: " << chan->getMembers().size() << " - " << (chan->getMembers().empty() ? "empty":"not empty") << std::endl;
+    //std::cout << "nb: " << chan->getMembers().size() << " - " << (chan->getMembers().empty() ? "empty":"not empty") << std::endl;
     if (chan->getMembers().empty())
         this->_serv->removeChannel(chan);
 }

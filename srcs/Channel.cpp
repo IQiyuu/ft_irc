@@ -1,6 +1,11 @@
 #include "Channel.hpp"
 
 Channel::Channel(std::string name ):_name(name) {
+    _topic = "";
+    _l = -1;
+    _k = "";
+    _t = 0;
+    _i = 0;
     std::cout << "Channel: " << _name << GREEN << " created." << RESET << std::endl;
 }
 Channel::~Channel(void){
@@ -25,12 +30,27 @@ void Channel::addModerator(Client *client)
 {
     _ops.push_back(client);
 }
+/* ajoute un client aux invites du channel */
+void Channel::addInvited(Client *client)
+{
+    _invited.push_back(client);
+}
 
 /* retourne 1 si client est op 0 sinon */
 int Channel::isOp( Client *client ) {
     std::vector<Client *>::iterator it;
     std::vector<Client *>           op = this->_ops;
     for (it = op.begin(); it != op.end(); ++it) 
+        if (*it == client)
+            return 1;
+    return 0;
+}
+
+/* retourne 1 si client est invite 0 sinon */
+int Channel::isInvited( Client *client ) {
+    std::vector<Client *>::iterator it;
+    std::vector<Client *>           inv = this->_invited;
+    for (it = inv.begin(); it != inv.end(); ++it) 
         if (*it == client)
             return 1;
     return 0;
@@ -65,6 +85,20 @@ void Channel::removeModerator(Client *client)
     std::cout << "No members named " << client->getNickName() << " in " << _name << "." << std::endl;
 }
 
+void Channel::removeInvited(Client *client)
+{
+    std::vector<Client*>::iterator it;
+    for (it = _invited.begin(); it != _invited.end(); it++)
+    {
+        if (*it == client)
+        {
+            _invited.erase(it);
+            return ;
+        }
+    }
+    std::cout << "No invited named " << client->getNickName() << " in " << _name << "." << std::endl;
+}
+
 /* renvoie 1 si client est connected 0 sinon */
 int Channel::isConnected(Client *client) {
     std::vector<Client*>::iterator it;
@@ -91,7 +125,7 @@ std::vector<Client *>   Channel::getModerator( void ) {
     return this->_ops;
 }
 
-bool                    Channel::getInvite( void ) {
+int                    Channel::getInvite( void ) {
     return this->_i;
 }
 
@@ -99,7 +133,7 @@ std::string             Channel::getKey( void ) {
     return this->_k;
 }
 
-bool                    Channel::getT( void ) {
+int                    Channel::getT( void ) {
     return this->_t;
 }
 
@@ -115,11 +149,11 @@ void    Channel::setL( int limit ) {
     this->_l = limit;
 }
 
-void    Channel::setT( bool t ) {
+void    Channel::setT( int t ) {
     this->_t = t;
 }
 
-void    Channel::setI( bool i ) {
+void    Channel::setI( int i ) {
     this->_i = i;
 }
 

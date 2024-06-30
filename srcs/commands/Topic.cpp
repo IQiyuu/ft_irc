@@ -25,7 +25,7 @@ void Topic::execute(Client *sender, std::string args)
     if (!chan->isConnected(sender))
         sender->sendReply(NOTONCHANNEL_ERR(sender->getPrefix(), chan->getName()));
     if (chan->getT() && !chan->isOp(sender)) {
-        sender->sendReply(CHANOPRIVMSG(sender->getPrefix(), chan->getName()));
+        sender->sendReply(CHANOPRIVNEEDED_ERR(sender->getPrefix(), chan->getName()));
         return ;
     }
     std::string topic = args.substr(args.find(':') == std::string::npos ? 0:args.find(':') + 1, args.size());

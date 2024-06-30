@@ -4,8 +4,8 @@ Mode::Mode( Server *serv ): Command(serv) { }
 Mode::~Mode( void ) { }
 
 void Mode::execute( Client *sender, std::string args ) {
-    if (args.empty()) {
-        std::cout << "Error: " << RED << "empty target." << RESET << std::endl;
+    if (args.empty() || args.find('+') == std::string::npos) {
+        //std::cout << "Error: " << RED << "empty target." << RESET << std::endl;
         sender->sendReply(NEEDMOREPARAMS_ERR(sender->getPrefix(), "MODE"));
         return ;
     }
@@ -20,6 +20,7 @@ void Mode::execute( Client *sender, std::string args ) {
     else {
         args = args.substr(args.find("+"), args.find("\r"));
         sender->sendReply(MODE_RPL(sender->getNickName(), args));
+        return ;
     }
 
     args = args.substr(args.find(" ") == std::string::npos ? args.size():args.find(" ")+1, args.size());
@@ -30,7 +31,7 @@ void Mode::execute( Client *sender, std::string args ) {
     }
 
     if (!chan->isOp(sender)) {
-        sender->sendReply(CHANOPRIVMSG(sender->getPrefix(), chan->getName()));
+        sender->sendReply(CHANOPRIVNEEDED_ERR(sender->getPrefix(), chan->getName()));
         return ;
     }
     if (args.at(0) == '+' || args.at(0) == '-') {
@@ -38,9 +39,9 @@ void Mode::execute( Client *sender, std::string args ) {
             case 'i':
                 std::cout << "MODE +i" << std::endl;
                 if (args.at(0) == '+')
-                    chan->setI(true);
+                    chan->setI(1);
                 else
-                    chan->setI(false);
+                    chan->setI(0);
                 chan->broadcast(MODE_RPL(chan->getName(), args));
                 break ;
             case 'k':
@@ -54,9 +55,9 @@ void Mode::execute( Client *sender, std::string args ) {
             case 't':
                 std::cout << "MODE +t" << std::endl;
                 if (args.at(0) == '+')
-                    chan->setT(true);
+                    chan->setT(1);
                 else
-                    chan->setT(false);
+                    chan->setT(0);
                 chan->broadcast(MODE_RPL(chan->getName(), args));
                 break ;
             case 'l':
@@ -75,7 +76,7 @@ void Mode::execute( Client *sender, std::string args ) {
             default:
                 Client *target;
                 if ((target = this->_serv->getClient(args.substr(args.find(" ") == std::string::npos ? args.size():args.find(" ")+1, args.size()))) == NULL) {
-                    std::cout << "Client doesn't exist." << std::endl;
+                    sender->sendReply(NOSUCHNICK_ERR(sender->getPrefix(), args.substr(args.find(" ") == std::string::npos ? args.size():args.find(" ")+1, args.size())));
                     return ;
                 }
                 if (args.at(0) == '+')

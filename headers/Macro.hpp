@@ -35,9 +35,10 @@
 #define NICK_RPL(ann, nn) ":" + ann + " NICK " + nn
 #define PING_RPL(cli, arg) ":" + cli + " PONG " + arg
 #define INVITE_RPL(cli, tar, chan) ":" + cli + " INVITE " + tar + " " + chan
-#define INVITING_RPL(cli, nn, tar, chan) ":" + cli + "341 " + nn + " " + tar + " " + chan
+#define INVITING_RPL(cli, nn, tar, chan) "341 " + nn + " " + tar + " " + chan
 #define MODE_RPL(nn, mode) "MODE " + nn + " :" + mode
 #define TOPIC_RPL(cli, chan, topic) "332 " + cli + " " + chan + " :" + topic
+
 /* USER */
 #define ALREADYREGISTERED_ERR(cli) "462 " + cli + " :You may not reregister."
 
@@ -49,7 +50,9 @@
 #define UNKNOWNCOMMAND_ERR(cli, comm) "421 " + cli + " " + comm + " :Unknow command"
 #define NOSUCHCHANNEL_ERR(cli, chan) "403 " + cli + " " + chan + " :No such channel"
 #define NOTONCHANNEL_ERR(cli, chan) "442 " + cli + " " + chan + " :You're not on that channel"
-#define CHANOPRIVMSG(cli, chan) "482 " + cli + " " + chan + " :You're not channel operator"
+#define CHANOPRIVNEEDED_ERR(cli, chan) "482 " + cli + " " + chan + " :You're not channel operator"
+#define USERONCHANNEL_ERR(cli, target, chan) "443 " + cli + " " + target + " " + " " + chan + ":is already on channel."
+#define NOSUCHNICK_ERR(cli, tar) "401 " + cli + " " + tar + " : No such nick/channel"
 
 /* JOIN */
 #define INVITEONLYCHAN_ERR(cli, chan) "473 " + cli + " " + chan + " :Cannot join channel (+i)"
@@ -57,14 +60,18 @@
 #define CHANFULL_ERR(cli, chan)  "471 " + cli + " " + chan + " :Cannot join channel (+l)"
 
 /* PRIVMSG */
-#define NOSUCHNICK_ERR(cli, tar) "401 " + cli + " " + tar + " : No such nick/channel"
 #define NOTEXTTOSEND_ERR(cli) "412 " + cli + " :No text to send"
 
 /* NICK */
 #define NICKNAMEINUSE_ERR(cli, nn) "433 " + cli + " " + nn + " :Nickname is already in use"
+#define NICKNAMERRONEUS_ERR(cli, nn) "432 " + cli + " " + nn + " :Erroneus nickname"
 
 /* TOPIC */
 #define CLEARING_TOPIC(chan) "Clearing the topic on " + chan
+
+
+/* INVITE */
+#define INVITEONLY_ERR(cli, chan) "473 " + cli + " " + chan + " :Cannot join channel (+i)"
 
 #endif
 

@@ -13,12 +13,14 @@ class Channel {
         std::vector<Client *>   _members;
         /* ops du channel (genre les modos) */
         std::vector<Client *>   _ops;
+        /* invited to the channel */
+        std::vector<Client *>   _invited;
 
         /* peut etre des modes */
         int                     _l;
         std::string             _k;
-        bool                    _t;
-        bool                    _i;
+        int                    _t;
+        int                    _i;
 
         Channel( void );
         Channel( const Channel & );
@@ -31,18 +33,25 @@ class Channel {
         /* ajoute un membre */
         void    addMember( Client * );
 
-         void    addModerator( Client * );
+        void    addInvited( Client * );
+
+        void    addModerator( Client * );
         /* retire un membre */
         /* si channel vide delete le channel (a verif) */
         void    removeMember( Client * );
 
         void    removeModerator( Client * );
 
+        void    removeInvited( Client * );
+
         /* verifie si le client est connecte au channel */
         int     isConnected( Client * );
 
         /* verifie si le client donne est operator */
         int     isOp( Client * );
+
+        /* verifie si le client est invite sur le channel*/
+        int    isInvited( Client * );
 
         /* envoie un message a tous les users */
         void    broadcast( std::string );
@@ -59,16 +68,16 @@ class Channel {
         std::vector<Client *>   getModerator( void );
         int                     getLimit( void );
 
-        void                    setI( bool );
-        void                    setT( bool );
+        void                    setI( int );
+        void                    setT( int );
         void                    setL( int );
         void                    setK( std::string );
 
         void                    setTopic( std::string );
 
-        bool                     getInvite( void );
+        int                     getInvite( void );
         std::string             getKey( void );
-        bool                    getT( void );
+        int                     getT( void );
 
 };
 

@@ -6,8 +6,6 @@ F =	main\
 	Channel\
 	Parser\
 	commands/Command\
-	commands/Ban\
-	commands/Cap\
 	commands/Invite\
 	commands/Join\
 	commands/Kick\
@@ -20,7 +18,6 @@ F =	main\
 	commands/User\
 	commands/Quit\
 	commands/Topic\
-	commands/Who
 
 S = $(foreach f, $(F), srcs/$(f).cpp)
 OBJ = $(S:.cpp=.o)

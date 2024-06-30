@@ -7,7 +7,7 @@ void Kick::execute( Client *client, std::string args ) {
     (void)args;
     (void)client;
     if (args.at(0) != '#') {
-        std::cout << "Error: " << RED << "KICK need channel" << RESET << std::endl;
+        std::cout << "Error: " << RED << " KICK need channel" << RESET << std::endl;
         return ;
     }
     if (args.find(' ') == std::string::npos)
@@ -19,7 +19,7 @@ void Kick::execute( Client *client, std::string args ) {
     args.erase(0, args.find(' ') + 1);
     std::vector<Client *> modo = chan->getMembers();
     std::vector<Client *>::iterator it2 = modo.begin();
-   while (it2 != modo.end()) {
+    while (it2 != modo.end()) {
         if ((*it2)->getNickName() != client->getNickName())
             chan->removeMember(*it2);
         ++it2;

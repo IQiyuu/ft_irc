@@ -168,6 +168,7 @@ void Server::newChannel(std::string args)
 Channel *Server::createChannel( std::string name ) {
     Channel *chan;
 
+    //std::cout << name << std::endl;
     chan = new Channel(name);
     this->_channels.push_back(chan);
     return (chan);

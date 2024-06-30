@@ -13,14 +13,15 @@ void Nick::execute(Client *client, std::string args)
         std::cout << "Error: " << RED << "nickname too long" << RESET << std::endl;
         return;
     }
-    // for (int i = 0; i <= (int)args.size(); i++)
-    // {
-    //     if (!isalpha(args[i]) && !isalnum(args[i]))
-    //     {
-    //         std::cout << "Error: " << RED << + "`" << args[i] << "` incorrect character." << RESET << std::endl;
-    //         return;
-    //     }
-    // }
+    for (int i = 0; i <= (int)args.size() - 1; i++)
+    {
+        if (!isalpha(args[i]) || !isalnum(args[i]))
+        {
+            // std::cout << "Error: " << RED << + "`" << args[i] << "`- " << i << " incorrect character." << RESET << std::endl;
+            client->sendReply(NICKNAMERRONEUS_ERR(client->getPrefix(), args));
+            return;
+        }
+    }
     if (this->_serv->getClient(args) != NULL) {
         client->setNickName(args);
         std::string tmp = client->getPrefix();
