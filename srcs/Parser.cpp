@@ -1,8 +1,6 @@
 #include "Parser.hpp"
 
 Parser::Parser( Server *serv ) {
-    _commands["BAN"] = new Ban(serv);
-    _commands["CAP"] = new Cap(serv);
     _commands["INVITE"] = new Invite(serv);
     _commands["JOIN"] = new Join(serv);
     _commands["KICK"] = new Kick(serv);
@@ -15,7 +13,6 @@ Parser::Parser( Server *serv ) {
     _commands["PRIVMSG"] = new PrivMsg(serv);
     _commands["TOPIC"] = new Topic(serv);
     _commands["USER"] = new User(serv);
-    _commands["WHO"] = new Who(serv);
 }
 
 Parser::~Parser( void ) {
@@ -69,6 +66,7 @@ int    Parser::parse( Client *sender, std::string args ) {
     std::cout << "Server: " << RED << "`" << command << "` Command not found. (" << str << ")" << RESET << std::endl;
     if (str.find('\n') != std::string::npos) {
         str.erase(0, str.find('\n') + 1);
+        std::cout << str << std::endl;
         parse(sender, str);
     }
     return 0;

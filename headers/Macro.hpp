@@ -38,6 +38,7 @@
 #define INVITING_RPL(cli, nn, tar, chan) "341 " + nn + " " + tar + " " + chan
 #define MODE_RPL(nn, mode) "MODE " + nn + " :" + mode
 #define TOPIC_RPL(cli, chan, topic) "332 " + cli + " " + chan + " :" + topic
+#define KICK_RPL(cli, target, chan, arg) ":" + cli + " KICK " + chan + " " + target + " " + arg
 
 /* USER */
 #define ALREADYREGISTERED_ERR(cli) "462 " + cli + " :You may not reregister."
@@ -50,9 +51,10 @@
 #define UNKNOWNCOMMAND_ERR(cli, comm) "421 " + cli + " " + comm + " :Unknow command"
 #define NOSUCHCHANNEL_ERR(cli, chan) "403 " + cli + " " + chan + " :No such channel"
 #define NOTONCHANNEL_ERR(cli, chan) "442 " + cli + " " + chan + " :You're not on that channel"
+#define NOTINCHANNEL_ERR(cli, target, chan) "441 " + cli + " " + target + " " + chan + " :They aren't on that channel"
 #define CHANOPRIVNEEDED_ERR(cli, chan) "482 " + cli + " " + chan + " :You're not channel operator"
 #define USERONCHANNEL_ERR(cli, target, chan) "443 " + cli + " " + target + " " + " " + chan + ":is already on channel."
-#define NOSUCHNICK_ERR(cli, tar) "401 " + cli + " " + tar + " : No such nick/channel"
+#define NOSUCHNICK_ERR(cli, tar) "401 " + cli + " " + tar + " :No such nick/channel"
 
 /* JOIN */
 #define INVITEONLYCHAN_ERR(cli, chan) "473 " + cli + " " + chan + " :Cannot join channel (+i)"
