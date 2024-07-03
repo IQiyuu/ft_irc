@@ -47,17 +47,14 @@ void Server::disconnect( int fd ) {
     std::vector<pollfd>::iterator it2 = this->_pfds.begin();
     while (it2 != this->_pfds.end()) {
         if (it2->fd == fd) {
-            it2 = this->_pfds.erase(it2);
+            this->_pfds.erase(it2);
             break ;
         }
         it2++;
     }
     /* on supprime l'instance du client deco dans ses channels */
-    std::vector<Channel *>  tmp_delete;
-    int a;
     std::vector<Channel *>::iterator it4 = this->_channels.begin();
     while (it4 != this->_channels.end()) {
-        a = 1;
         std::vector<Client *> mm = (*it4)->getMembers();
         if ((std::find(mm.begin(), mm.end(), tmp) != mm.end())) {
             (*it4)->removeMember(tmp);
@@ -66,10 +63,9 @@ void Server::disconnect( int fd ) {
                 Channel *tmp_chan = *it4;
                 this->_channels.erase(it4);
                 delete tmp_chan;
-                a = 0;
             }
         }
-        if (a)
+        else
             ++it4;
     }
     /* on supprime l'instance du client deco */
@@ -83,6 +79,26 @@ void Server::disconnect( int fd ) {
     }
     close(fd);
     delete tmp;
+}
+
+/* on deconne le client fd */
+void Server::closeServer( void ) {
+    /* on supprime tous les cannels */
+    std::vector<Channel *>::iterator it4 = this->_channels.begin();
+    while (it4 != this->_channels.end()) {
+        Channel *tmp_chan = *it4;
+        this->_channels.erase(it4);
+        delete tmp_chan;
+    }
+    /* on supprime les instances des users */
+    std::vector<Client *>::iterator it3 = this->_clients.begin();
+    while (it3 != this->_clients.end()) {
+        Client *tmp_cli = *it3;
+        this->_clients.erase(it3);
+        delete tmp_cli;
+    }
+    if (close(this->_serverFd) == -1)
+        std::cout << "close error" << std::endl;
 }
 
 /* cherche le client avec son nickname*/
@@ -134,34 +150,9 @@ std::string Server::getPass( void ) const {
 void    Server::sendToConnected( Client *client, std::string msg ) {
     std::vector<Channel *>::iterator it;
     
-    for (it = this->_channels.begin(); it != this->_channels.end(); ++it) {
-        std::vector<Client *> mm = (*it)->getMembers();
-        if (std::find(mm.begin(), mm.end(), client) != mm.end()) {
+    for (it = this->_channels.begin(); it != this->_channels.end(); ++it)
+        if ((*it)->isConnected(client))
             (*it)->broadcast(msg, client);
-        }
-    }
-}
-
-void Server::newChannel(std::string args)
-{
-    if (args.size() > 50)
-    {
-        std::cout << "Error: " << RED << " max length to create a channel is 50." << RESET << std::endl;
-        return ;
-    }
-    if (args[0] != '#')
-    {
-        std::cout << "Error: " << RED << " the first character must be a #." << RESET << std::endl;
-        return ;
-    }
-    for (int i = 0; i <= (int)args.size(); i++)
-    {
-        if (!isalnum(args[i]) && !isalnum(args[i]) && args[i] != '_' && args[i] != '-' && args[i] != '.')
-        {
-            std::cout << "Error: " << RED << " wrong character in channel name." << RESET << std::endl;
-            return ;
-        }
-    }
 }
 
 /* ajoute un nouveau channel au server */
@@ -203,7 +194,7 @@ int Server::launch( void ) {
     serverAddr.sin_port = htons(atoi(this->_port.data()));
     fcntl(this->_serverFd, F_SETFL, O_NONBLOCK);
     if (bind(this->_serverFd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == ERROR) {
-        std::cout << "Error: " << RED << " binding failed" << RESET << std::endl;
+        std::cout << "Error: " << RED << "binding failed." << RESET << std::endl;
         return ERROR;
     }
 
@@ -213,7 +204,7 @@ int Server::launch( void ) {
         return ERROR;
     }
 
-    std::cout << "Server: " << YELLOW << "launched" << RESET << std::endl;
+    std::cout << "Server: " << YELLOW << "launched." << RESET << std::endl;
     return SUCCESS;
 }
 
@@ -230,18 +221,11 @@ int Server::boucle( void ) {
 
     this->_state = LISTENING;
     std::cout << "Server: " << YELLOW << "listening " << RESET << "on port " << this->_port << std::endl;
-    while (this->_state == LISTENING) {
+    while (!sigint) {
         /* on attend un event sur les fd enregistres (serv fd compris) */
         int pfd = poll(this->_pfds.data(), this->_pfds.size(), POLL_TIMEOUT);
-        if (pfd == ERROR) {
-            if (sigint) {
-                this->_state = EXITING;
-                std::cout << "Server: " << YELLOW << "exiting " << RESET << "after ^C" << std::endl;
-                break ;
-            }
-            std::cout << "Error: " << RED << "poll crashed" << RESET << std::endl;
-            return ERROR;
-        }
+        if (pfd == ERROR)
+            break ;
         /* on parcour tous nos pollfd pour voir si il y a des events */
         for (it = this->_pfds.begin(); it != this->_pfds.end(); it++) {
             /* si ya un event qui arrive */
@@ -270,5 +254,7 @@ int Server::boucle( void ) {
             }
         }
     }
+    std::cout << "Server: " << YELLOW << "closing after ^C." << RESET << std::endl;
+    closeServer();
     return SUCCESS;
 }

@@ -59,12 +59,12 @@ class Server {
         int    connect( struct sockaddr_in, socklen_t );
         /* deconnecte un Client du server */
         void    disconnect( int );
-        /* cree un channel*/
-        void    newChannel(std::string);
         /* creer un nouveau channel et le retourne */
         Channel *createChannel( std::string );
         /* supprime un channel */
         void    removeChannel( Channel * );
+
+        void    closeServer( void );
 
         /* parse la requete du client */
         void    parse( void );
