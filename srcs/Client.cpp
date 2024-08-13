@@ -18,6 +18,7 @@ Client::Client(std::string realname, std::string nickname, std::string username,
 }
 
 Client::~Client(void) {
+    std::cout << this->_socketFd << std::endl;
     if (close(this->_socketFd) == -1)
         std::cout << "close error" << std::endl;
     std::cout << "Client: " << _nickname << RED << " deleted!" << RESET << std::endl;

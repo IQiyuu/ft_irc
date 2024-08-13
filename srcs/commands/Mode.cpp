@@ -34,56 +34,74 @@ void Mode::execute( Client *sender, std::string args ) {
         sender->sendReply(CHANOPRIVNEEDED_ERR(sender->getPrefix(), chan->getName()));
         return ;
     }
+    int         state;
+    std::string ret = args;
+    std::string params = args.substr(args.find(' ') == std::string::npos ? args.size():args.find(' ')+1, args.size());
     if (args.at(0) == '+' || args.at(0) == '-') {
-        switch (args.at(1)) {
-            case 'i':
-                std::cout << "MODE +i" << std::endl;
-                if (args.at(0) == '+')
-                    chan->setI(1);
-                else
-                    chan->setI(0);
-                chan->broadcast(MODE_RPL(chan->getName(), args));
-                break ;
-            case 'k':
-                std::cout << "MODE +k with " << args.substr(2, args.size()) << std::endl;
-                if (args.at(0) == '+')
-                    chan->setK(args.substr(args.find(" ") == std::string::npos ? args.size():args.find(" ")+1, args.size()));
-                else
-                    chan->setK("");
-                chan->broadcast(MODE_RPL(chan->getName(), args));
-                break ;
-            case 't':
-                std::cout << "MODE +t" << std::endl;
-                if (args.at(0) == '+')
-                    chan->setT(1);
-                else
-                    chan->setT(0);
-                chan->broadcast(MODE_RPL(chan->getName(), args));
-                break ;
-            case 'l':
-                std::cout << "MODE +l to " << args.substr(2, args.size()) << std::endl;
-                if (args.at(0) == '+') {
-                    int limit;
-                    std::istringstream(args.substr(args.find(" ") == std::string::npos ? args.size():args.find(" ")+1, args.size())) >> limit;
-                    if (limit <= 0)
-                        return ;
-                    chan->setL(limit);
+        for (int i = 0; i < (int)(args.find(' ') == std::string::npos ? args.size():args.find(' ')); i++) {
+            if (args[i] == '+')
+                state = 1;
+            else if (args[i] == '-')
+                state = 0;
+            else {
+                switch (args[i]) {
+                    case 'i':
+                        std::cout << "MODE i" << std::endl;
+                        if (state == 1)
+                            chan->setI(1);
+                        else
+                            chan->setI(0);
+                        break ;
+                    case 'k':
+                        std::cout << "MODE k" << std::endl;
+                        if (state == 1) {
+                            std::string key = params.substr(0, params.find(' ') == std::string::npos ? params.size():params.find(' '));
+                            chan->setK(key);
+                            std::cout << key << std::endl;
+                            params.erase(0, params.find(' ') == std::string::npos ? params.size():params.find(' ')+1);
+                        }
+                        else
+                            chan->setK("");
+                        break ;
+                    case 't':
+                        std::cout << "MODE t" << std::endl;
+                        if (state == 1)
+                            chan->setT(1);
+                        else
+                            chan->setT(0);
+                        break ;
+                    case 'l':
+                        std::cout << "MODE l" << std::endl;
+                        if (state == 1) {
+                            int limit;
+                            std::istringstream(params.substr(0, params.find(" ") == std::string::npos ? params.size():params.find(" "))) >> limit;
+                            if (limit <= 0)
+                                break ;
+                            std::cout << limit << std::endl;
+                            chan->setL(limit);
+                            params.erase(0, params.find(' ') == std::string::npos ? params.size():params.find(' ')+1);
+                        }
+                        else
+                            chan->setL(-1);
+                        break ;
+                    case 'o':
+                        std::cout << "MODE o" << std::endl;
+                        Client *target;
+                        if ((target = this->_serv->getClient(params.substr(0, params.find(" ") == std::string::npos ? params.size():params.find(" ")))) == NULL) {
+                            sender->sendReply(NOSUCHNICK_ERR(sender->getPrefix(), params.substr(0, params.find(" ") == std::string::npos ? params.size():params.find(" "))));
+                            break ;
+                        }
+                        if (state == 1)
+                            chan->addModerator(target);
+                        else
+                            chan->removeModerator(target);
+                        std::cout << target->getNickName() << std::endl;
+                        params.erase(0, params.find(' ') == std::string::npos ? params.size():params.find(' ')+1);
+                    default:
+                        break ;
                 }
-                else
-                    chan->setL(-1);
-                chan->broadcast(MODE_RPL(chan->getName(), args));
-                break ;
-            default:
-                Client *target;
-                if ((target = this->_serv->getClient(args.substr(args.find(" ") == std::string::npos ? args.size():args.find(" ")+1, args.size()))) == NULL) {
-                    sender->sendReply(NOSUCHNICK_ERR(sender->getPrefix(), args.substr(args.find(" ") == std::string::npos ? args.size():args.find(" ")+1, args.size())));
-                    return ;
-                }
-                if (args.at(0) == '+')
-                    chan->addModerator(target);
-                else
-                    chan->removeModerator(target);
-                chan->broadcast(MODE_RPL(chan->getName(), args));
+            }
         }
+        chan->broadcast(MODE_RPL(chan->getName(), ret));
     }
 }

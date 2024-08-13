@@ -97,8 +97,6 @@ void Server::closeServer( void ) {
         this->_clients.erase(it3);
         delete tmp_cli;
     }
-    if (close(this->_serverFd) == -1)
-        std::cout << "close error" << std::endl;
 }
 
 /* cherche le client avec son nickname*/
