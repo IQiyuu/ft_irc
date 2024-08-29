@@ -97,6 +97,9 @@ void Server::closeServer( void ) {
         this->_clients.erase(it3);
         delete tmp_cli;
     }
+    for (int i = 0; i < (int)_pfds.size(); i++)
+        if(_pfds[i].fd >= 0)
+            close(_pfds[i].fd);
 }
 
 /* cherche le client avec son nickname*/

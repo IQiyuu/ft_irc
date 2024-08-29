@@ -78,6 +78,7 @@ class Channel {
         int                     getInvite( void );
         std::string             getKey( void );
         int                     getT( void );
+        const std::string       getModes( void ) const;
 
 };
 

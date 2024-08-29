@@ -141,6 +141,20 @@ int                     Channel::getLimit( void ) {
     return this->_l;
 }
 
+const std::string   Channel::getModes( void ) const { 
+    std::string ret = "+";
+
+    if (this->_i)
+        ret += 'i';
+    if (!this->_k.empty())
+        ret += 'k';
+    if (this->_t)
+        ret += 't';
+    if (this->_l)
+        ret += 'l';
+    return (ret == "+" ? "" : ret);
+}
+
 void    Channel::setK( std::string key ) {
     this->_k = key;
 }

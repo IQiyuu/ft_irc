@@ -7,7 +7,9 @@ Nick::~Nick( void ) { }
 // ajouter un check pour voir si le pseudo exite deja et voir si c'est pas un nom de commande
 void Nick::execute(Client *client, std::string args)
 {
-
+   
+    if (client->getState() == BADPASS || client->getState() == NONE)
+        return ;
     if (args.size()  > 12)
     {
         std::cout << "Error: " << RED << "nickname too long" << RESET << std::endl;

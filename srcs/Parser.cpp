@@ -29,14 +29,23 @@ int    Parser::parse( Client *sender, std::string args ) {
         return 0;
     if (args.find("\n") == std::string::npos) {
         std::cout << sender->getNickName() << ": " << YELLOW << "All Packages are not received yet." << RESET << std::endl;
+        sender->appendRequest(args);
         return 0;
     }
-    std::string str = args;
+    std::string str;
+    if (!sender->getRequest().empty()) {
+        sender->appendRequest(args);
+        args = sender->getRequest();
+        args.erase(args.size()-1);
+        sender->setRequest("");
+    }
+    str = args;
     if (str.find(' ') != std::string::npos)    
-        command = str.substr(0, str.find(' '));
+            command = str.substr(0, str.find(' '));
     else
         command = str;
     str.erase(0, str.find(' ') + 1);
+
 
     std::map<std::string, Command *>::iterator it;
     for(it = this->_commands.begin(); it != this->_commands.end(); ++it) {

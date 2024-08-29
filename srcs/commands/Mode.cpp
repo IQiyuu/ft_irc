@@ -4,7 +4,7 @@ Mode::Mode( Server *serv ): Command(serv) { }
 Mode::~Mode( void ) { }
 
 void Mode::execute( Client *sender, std::string args ) {
-    if (args.empty() || args.find('+') == std::string::npos) {
+    if (args.empty() || (args.find('+') == std::string::npos && args.find('#') == std::string::npos)) {
         //std::cout << "Error: " << RED << "empty target." << RESET << std::endl;
         sender->sendReply(NEEDMOREPARAMS_ERR(sender->getPrefix(), "MODE"));
         return ;
@@ -26,7 +26,7 @@ void Mode::execute( Client *sender, std::string args ) {
     args = args.substr(args.find(" ") == std::string::npos ? args.size():args.find(" ")+1, args.size());
     std::cout << "|" << args << "|" << std::endl;
     if (args.empty()) {
-        std::cout << "Liste des modes" << std::endl;
+        sender->sendReply(MODE_RPL(chan->getName(), chan->getModes()));
         return ;
     }
 
@@ -102,6 +102,6 @@ void Mode::execute( Client *sender, std::string args ) {
                 }
             }
         }
-        chan->broadcast(MODE_RPL(chan->getName(), ret));
+        sender->sendReply(MODE_RPL(chan->getName(), chan->getModes()));
     }
 }
