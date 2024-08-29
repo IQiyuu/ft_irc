@@ -41,9 +41,9 @@ int    Parser::parse( Client *sender, std::string args ) {
     }
     str = args;
     if (str.find(' ') != std::string::npos)    
-            command = str.substr(0, str.find(' '));
-    else
-        command = str;
+        command = str.substr(0, str.find(' '));
+    else if (str.find('\r') != std::string::npos)    
+        command = str.substr(0, str.find('\r'));
     str.erase(0, str.find(' ') + 1);
 
 
@@ -73,6 +73,7 @@ int    Parser::parse( Client *sender, std::string args ) {
         }
     }
     std::cout << "Server: " << RED << "`" << command << "` Command not found. (" << str << ")" << RESET << std::endl;
+    sender->sendReply(UNKNOWNCOMMAND_ERR(sender->getNickName(), command));
     if (str.find('\n') != std::string::npos) {
         str.erase(0, str.find('\n') + 1);
         std::cout << str << std::endl;

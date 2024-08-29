@@ -24,6 +24,10 @@ int main(int ac, char *av[]) {
         std::cout << "Error: " << RED << "./ircserv <port> <password>" RESET << std::endl;
         return 0;
     }
+    if (av[1][0] == '-') {
+        std::cout << "Error :" << RED << " port negatif." << RESET << std::endl;
+        return SUCCESS;
+    }
     Server serv(av[1], av[2]);
     if (serv.launch() == ERROR)
         return 1;

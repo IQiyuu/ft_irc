@@ -17,7 +17,7 @@ void Join::execute(Client *client, std::string args)
     /* creer le channel si il n'existe pas */
     if ((chan = this->_serv->getChannel(args.substr(0, args.find(' ') == std::string::npos ? args.size():args.find(' ')))) == NULL)  {
         //std::cout << "channel created." << std::endl;
-        chan = this->_serv->createChannel(args);
+        chan = this->_serv->createChannel(args.substr(0, args.find(' ') == std::string::npos ? args.size():args.find(' ')));
         chan->addModerator(client);
     }
     else if (chan->isConnected(client)){

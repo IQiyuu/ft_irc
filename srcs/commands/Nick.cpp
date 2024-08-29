@@ -34,12 +34,14 @@ void Nick::execute(Client *client, std::string args)
     }
     std::string tmp = client->getPrefix();
     if (client->getState() != LOGED) {
-         client->setNickName(args);
+        client->setNickName(args);
         if (client->getState() == REGISTERED) {
             client->welcome();
+            return ;
         }
         if (client->getState() == AUTH) {
             client->setState(REGISTERED);
+            return ;
         }
     }
     client->sendMsg(NICK_RPL(tmp, args));
