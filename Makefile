@@ -22,7 +22,7 @@ F =	main\
 S = $(foreach f, $(F), srcs/$(f).cpp)
 OBJ = $(S:.cpp=.o)
 
-CFLAGS = -Wall -Werror -Wextra -std=c++98 -Iheaders -fsanitize=address -g
+CFLAGS = -Wall -Werror -Wextra -std=c++98 -Iheaders -g
 
 all: $(NAME)
 r: re

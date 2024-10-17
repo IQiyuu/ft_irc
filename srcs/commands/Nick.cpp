@@ -17,9 +17,13 @@ void Nick::execute(Client *client, std::string args)
     }
     for (int i = 0; i <= (int)args.size() - 1; i++)
     {
-        if ((!isalpha(args[i]) || !isalnum(args[i])) && args[i] != '_')
+        if ((!isalnum(args[i]) && args[i] != '_'))
         {
-            // std::cout << "Error: " << RED << + "`" << args[i] << "`- " << i << " incorrect character." << RESET << std::endl;
+            client->sendReply(NICKNAMERRONEUS_ERR(client->getPrefix(), args));
+            return;
+        }
+        if (i == 0 && args[i] >= '0' && args[i] <= '9')
+        {
             client->sendReply(NICKNAMERRONEUS_ERR(client->getPrefix(), args));
             return;
         }

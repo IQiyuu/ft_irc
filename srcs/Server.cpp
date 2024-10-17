@@ -1,5 +1,7 @@
 #include "Server.hpp"
 
+#include <errno.h>
+
 Server::Server( std::string port, std::string pass ): 
     _port(port), _serverFd(0), _password(pass), _parser(new Parser(this)) {
     std::cout << "Server " << GREEN << "created" << RESET << std::endl;
@@ -48,6 +50,7 @@ void Server::disconnect( int fd ) {
     while (it2 != this->_pfds.end()) {
         if (it2->fd == fd) {
             this->_pfds.erase(it2);
+            close(fd);
             break ;
         }
         it2++;
@@ -77,7 +80,6 @@ void Server::disconnect( int fd ) {
         }
         ++it3;
     }
-    close(fd);
     delete tmp;
 }
 
@@ -100,6 +102,7 @@ void Server::closeServer( void ) {
     for (int i = 0; i < (int)_pfds.size(); i++)
         if(_pfds[i].fd >= 0)
             close(_pfds[i].fd);
+    close(_serverFd);
 }
 
 /* cherche le client avec son nickname*/
@@ -193,9 +196,13 @@ int Server::launch( void ) {
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_port = htons(atoi(this->_port.data()));
-    fcntl(this->_serverFd, F_SETFL, O_NONBLOCK);
+
+    int optval = 1;
+    if (setsockopt(_serverFd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)))
+         std::cout << "Error while setting socket options!" << std::endl;
+
     if (bind(this->_serverFd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == ERROR) {
-        std::cout << "Error: " << RED << "binding failed." << RESET << std::endl;
+        std::cout << "Error: " << RED << "binding failed: " << errno << RESET << std::endl;
         return ERROR;
     }
 

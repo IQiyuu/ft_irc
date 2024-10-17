@@ -60,6 +60,7 @@ void Join::execute(Client *client, std::string args)
             if (key.compare(chan->getKey()))
                 client->sendReply(BADKEYCHANNEL_ERR(client->getPrefix(), chan->getName()));
     }
+    client->sendReply(TOPIC_RPL(client->getPrefix(), chan->getName(), chan->getTopic()));
     chan->addMember(client);
     std::string clientList;
 

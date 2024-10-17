@@ -28,21 +28,39 @@ void Kick::execute( Client *client, std::string args ) {
         client->sendReply(NOTINCHANNEL_ERR(client->getPrefix(), target->getNickName(), chan->getName()));
         return ;
     }
+    std::vector<Client *> mod = chan->getModerator();
+    std::vector<Client *>::iterator it3 = mod.begin();
     args.erase(0, args.find(' ') == std::string::npos ? args.size(): args.find(' ') + 1);
-    chan->broadcast2(KICK_RPL(client->getPrefix(), target->getNickName(), chan->getName(), args));
+    while (it3 != mod.end()) {
+        std::cout << (*it3)->getNickName() << " - " << client->getNickName() << std::endl;
+        if ((*it3)->getNickName() == client->getNickName())
+            break;
+        ++it3;
+    }
+
+    if (it3 == mod.end())
+    {
+        client->sendReply(CHANOPRIVNEEDED_ERR(client->getPrefix(), chan->getName()));
+        return ;
+    }
+    
     std::vector<Client *> modo = chan->getModerator();
     std::vector<Client *>::iterator it2 = modo.begin();
     while (it2 != modo.end()) {
         if ((*it2)->getNickName() == target->getNickName())
+        {
             chan->removeModerator(*it2);
+        }
         ++it2;
     }
     std::vector<Client *> mm = chan->getMembers();
     std::vector<Client *>::iterator it = mm.begin();
     while (it != mm.end()) {
-        //std::vector<Client *> mm = (*it)->getNickName();
         if ((*it)->getNickName() == target->getNickName())
+        {
+            chan->broadcast2(KICK_RPL(client->getPrefix(), target->getNickName(), chan->getName(), args));
             chan->removeMember(*it);
+        }
         ++it;
     }
 }
