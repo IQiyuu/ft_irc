@@ -13,22 +13,6 @@ class Command {
         virtual void execute( Client *, std::string ) = 0;
 };
 
-/* Ban un mec */
-class Ban: public Command {
-    public:
-        Ban( Server * );
-        ~Ban( void );
-        void execute( Client *, std::string );
-};
-
-/* liste les capacites du serv (j'ai mit none a voir) */
-class Cap: public Command {
-    public:
-        Cap( Server * );
-        ~Cap( void );
-        void execute( Client *, std::string );
-};
-
 /* invite un mec dans le channel */
 class Invite: public Command {
     public:
@@ -93,14 +77,6 @@ class Ping: public Command {
         void execute( Client *, std::string );
 };
 
-/* bah reponse a ping */
-class Pong: public Command {
-    public:
-        Pong( Server * );
-        ~Pong( void );
-        void execute( Client *, std::string );
-};
-
 /* message prive a un mec / un chan */
 class PrivMsg: public Command {
     public:
@@ -122,14 +98,6 @@ class User: public Command {
     public:
         User( Server * );
         ~User( void );
-        void execute( Client *, std::string );
-};
-
-/* donne les infos sur tout le monde ou un channel ou une personne */
-class Who: public Command {
-    public:
-        Who( Server * );
-        ~Who( void );
         void execute( Client *, std::string );
 };
 
