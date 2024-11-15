@@ -14,6 +14,12 @@ void Kick::execute( Client *client, std::string args ) {
         client->sendReply(NOSUCHCHANNEL_ERR(client->getPrefix(), args.substr(0, args.find(' '))));
         return ;
     }
+    //std::string tmp= args.erase(0, args.find(' ') + 1);
+    //if (client->getNickName() == tmp.erase(args.find(' '), args.size()))
+    //{
+      //  std::cout << client->getNickName()  << " | " << tmp.erase(args.find(' '), args.size()) << "|" << std::endl;
+       // client->sendReply("Error: Cannot kick yourself");
+    //}
     args.erase(0, args.find(' ') + 1);
     std::cout << args.substr(0, args.find(' ') == std::string::npos ? args.size(): args.find(' ')) << std::endl;
     if ((target = this->_serv->getClient(args.substr(0, args.find(' ') == std::string::npos ? args.size(): args.find(' ')))) == NULL) {

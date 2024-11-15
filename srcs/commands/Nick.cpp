@@ -13,6 +13,7 @@ void Nick::execute(Client *client, std::string args)
     if (args.size()  > 12)
     {
         std::cout << "Error: " << RED << "nickname too long" << RESET << std::endl;
+        client->sendReply(NICKNAMERRONEUS_ERR(client->getPrefix(), args));
         return;
     }
     for (int i = 0; i <= (int)args.size() - 1; i++)
