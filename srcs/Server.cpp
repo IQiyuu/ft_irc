@@ -132,7 +132,7 @@ Channel *Server::getChannel(std::string args){
     std::vector<Channel*>::iterator it;
     for (it = _channels.begin(); it != _channels.end(); it++)
     {
-        std::cout << "|" << (*it)->getName().size() << "|" << args.size() << "|" << std::endl;
+        // std::cout << "|" << (*it)->getName().size() << "|" << args.size() << "|" << std::endl;
         if ((*it)->getName() == args)
             return *it;
     }

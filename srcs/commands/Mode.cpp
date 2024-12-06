@@ -24,7 +24,6 @@ void Mode::execute( Client *sender, std::string args ) {
     }
 
     args = args.substr(args.find(" ") == std::string::npos ? args.size():args.find(" ")+1, args.size());
-    std::cout << "|" << args << "|" << std::endl;
     if (args.empty()) {
         sender->sendReply(MODE_RPL(chan->getName(), chan->getModes()));
         return ;
@@ -46,38 +45,38 @@ void Mode::execute( Client *sender, std::string args ) {
             else {
                 switch (args[i]) {
                     case 'i':
-                        std::cout << "MODE i" << std::endl;
+                        // std::cout << "MODE i" << std::endl;
                         if (state == 1)
                             chan->setI(1);
                         else
                             chan->setI(0);
                         break ;
                     case 'k':
-                        std::cout << "MODE k" << std::endl;
+                        // std::cout << "MODE k" << std::endl;
                         if (state == 1) {
                             std::string key = params.substr(0, params.find(' ') == std::string::npos ? params.size():params.find(' '));
                             chan->setK(key);
-                            std::cout << key << std::endl;
+                            // std::cout << key << std::endl;
                             params.erase(0, params.find(' ') == std::string::npos ? params.size():params.find(' ')+1);
                         }
                         else
                             chan->setK("");
                         break ;
                     case 't':
-                        std::cout << "MODE t" << std::endl;
+                        // std::cout << "MODE t" << std::endl;
                         if (state == 1)
                             chan->setT(1);
                         else
                             chan->setT(0);
                         break ;
                     case 'l':
-                        std::cout << "MODE l" << std::endl;
+                        // std::cout << "MODE l" << std::endl;
                         if (state == 1) {
                             int limit;
                             std::istringstream(params.substr(0, params.find(" ") == std::string::npos ? params.size():params.find(" "))) >> limit;
                             if (limit <= 0)
                                 break ;
-                            std::cout << limit << std::endl;
+                            // std::cout << limit << std::endl;
                             chan->setL(limit);
                             params.erase(0, params.find(' ') == std::string::npos ? params.size():params.find(' ')+1);
                         }
@@ -85,7 +84,7 @@ void Mode::execute( Client *sender, std::string args ) {
                             chan->setL(-1);
                         break ;
                     case 'o':
-                        std::cout << "MODE o" << std::endl;
+                        // std::cout << "MODE o" << std::endl;
                         Client *target;
                         if ((target = this->_serv->getClient(params.substr(0, params.find(" ") == std::string::npos ? params.size():params.find(" ")))) == NULL) {
                             sender->sendReply(NOSUCHNICK_ERR(sender->getPrefix(), params.substr(0, params.find(" ") == std::string::npos ? params.size():params.find(" "))));
@@ -95,7 +94,7 @@ void Mode::execute( Client *sender, std::string args ) {
                             chan->addModerator(target);
                         else
                             chan->removeModerator(target);
-                        std::cout << target->getNickName() << std::endl;
+                        // std::cout << target->getNickName() << std::endl;
                         params.erase(0, params.find(' ') == std::string::npos ? params.size():params.find(' ')+1);
                     default:
                         break ;

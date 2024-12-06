@@ -57,8 +57,10 @@ void Join::execute(Client *client, std::string args)
                 return ;
             }
             std::string key = args.substr(args.find(' ') + 1, args.size());
-            if (key.compare(chan->getKey()))
+            if (key.compare(chan->getKey())) {
                 client->sendReply(BADKEYCHANNEL_ERR(client->getPrefix(), chan->getName()));
+                return ;
+            }
     }
     client->sendReply(TOPIC_RPL(client->getPrefix(), chan->getName(), chan->getTopic()));
     chan->addMember(client);
@@ -84,7 +86,7 @@ void Join::execute(Client *client, std::string args)
     client->sendReply(CLIENTLIST(clientList, client->getPrefix(), chan->getName()));
     client->sendReply(ENDOF_CLIENTLIST(client->getPrefix(), chan->getName()));
 
-    std::cout << "(" << chan->getName() << ")" << std::endl;
+    // std::cout << "(" << chan->getName() << ")" << std::endl;
     
     /* on envoie les reponses au client */
     // client->sendMsg(WHOCHAN(client->getPrefix(), clientList, client->getNickName(), chan->getName()));
